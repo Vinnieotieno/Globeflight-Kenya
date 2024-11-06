@@ -54,49 +54,45 @@ export const contactCards = [
 
 export const faqs = [
   {
-    question: "Which countries do you currently offer freight services from?",
+    question: "WHAT REGIONS IN EAST AFRICA DO YOU COVER?",
     answer:
-      "We currently operate in 15 countries and 26 destinations. They include: China (Guangzhou, Hongkong), Dubai (Al-Mamzar, Deira, Sharjah, Abu-Dhabi), India (Mumbai), Kenya (Nairobi) Pakistan (Karachi), Tanzania (Dar es Salaam), Thailand (Bangkok), Turkey (Istanbul), Uganda (Kampala), United Kingdom (London), United States (New York,NY; Washington DC; Dallas, TX; Atlanta, GA; Houston, TX), South Africa (Jo'burg), Netherlands (Amsterdam).",
+      "We provide distribution services across East Africa, covering countries such as Kenya, Tanzania, Uganda, Rwanda, Ethiopia,and more. Our extensive network ensures seamless transportation within these regions.",
   },
   {
-    question: "Do you export to the above destinations as well?",
-    answer: "Yes, World Wings have partnered with other agents like DHL, FedEx,Aramex and others ...",
+    question: "WHAT TYPES OF GOODS DO YOU TRANSPORT?",
+    answer: "We handle a wide range of goods, including perishables, bulk goods, retail products, electronics, pharmaceuticals, and more. Our experienced team ensures the safe and secure transportation of your goods, regardless of their nature.",
   },
   {
     question: "How do I know my freight charges? ",
     answer: "Please send us an email. Value added services such as door delivery and re-packaging for international shipping are chargeable.",
   },
   {
-    question: "What is chargeable weight in air freight?",
+    question: "HOW DO YOU ENSURE THE SAFETY OF MY GOODS DURING TRANSPORTATION?",
     answer:
-      "Chargeable weight is the actual or volumetric weight (v/m) of the package, whichever is higher. Volumetric weight (also known as Dimensional Weight) is calculated by multiplying length by width by height of each package (cubic size) then dividing by 165 (if measured in inches) or by 5,000 (if measured in centimetres).",
+      "We prioritize the safety and security of your goods. Our fleet of vehicles is regularly maintained, equipped with advanced tracking systems, and operated by skilled drivers trained in safe handling practices. Additionally, we offer insurance coverage options to provide additional peace of mind.",
   },
 
   {
-    question: "Why don’t you just use actual weight for invoicing?",
+    question: "CAN YOU ACCOMMODATE SPECIFIC DELIVERY SCHEDULES?",
     answer:
-      "By basing charges on weight alone, low density packages become unprofitable for freight carriers due to the amount of space they take up in an aircraft.",
+      "Absolutely. We understand the importance ofmeeting delivery deadlines. Our team works closely with you to understand your /n requirements and develop customized delivery schedules that align with your business needs.",
   },
   {
-    question: "Why are your rates so competitive? Do they include duty and customs clearance?",
+    question: "WHY CHOOSE US AS GLOBEFLIGHT KENYA ?",
     answer:
-      "We are able to offer cheaper rates in comparison to our competition because of the excellent business relationship we enjoy with our network of agents and carriers which provide us the best routing for our consignments. Price quotations received from our staffs are all inclusive (all-in) from our office of dispatch up to the point of collection by consignee.",
+      "With over 25 years of experience in the logistics industry, we have honed our expertise, developed strong relationships, and gained in-depth knowledge of the East African market.",
   },
   {
-    question: "Is my shipment insured?",
+    question: "DO YOU OFFER WAREHOUSING AND STORAGE SOLUTIONS?",
     answer:
-      "No. On request, we however facilitate purchase of supplementary freight insurance through the air or ocean line during the freight booking process.",
+      "Yes, we offer warehousing and storage solutions to accommodate your inventory needs. Our secure facilities are equipped to handle various types of goods, providing you with flexible storage options as per your requirements.",
   },
   {
-    question: "Can I track my shipment?",
-    answer: "At the moment we are developing the tracking systems but you can always reach out to our staff for new updates.",
+    question: "HOW CAN I KEEP TRACK OF MY SHIPMENTS?",
+    answer: "We appreciate the importance of tracking your shipments and staying up to date on their journey at Globeflight and Union Green. We have a dedicated customer support team that keeps you informed at all times.When you entrust us with your shipment, our customer service representatives keep you updated on the status and location of your items on a frequent basis. You can count on our team to respond quickly to \n any questions or issues you may have about your cargo.",
   },
 
-  {
-    question: "Can you store my shipment in your warehouse?",
-    answer:
-      "For a period of 7 days from the day we receive it in our warehouse we will store it free of charge. Thereafter it will attract a storage fee per day depending on chargeable weight. Three months from date of arrival at our warehouse and without collection commitment from consignee, we will auction the consignment to recover incurred costs.",
-  },
+
   {
     question: "What is minimum chargeable weight and how does it affect me?",
     answer:
