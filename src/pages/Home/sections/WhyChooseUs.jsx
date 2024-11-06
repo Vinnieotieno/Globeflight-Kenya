@@ -14,9 +14,9 @@ const WhyChooseUs = () => {
             <h1 className="md:text-7x1 text-xl text-brandRed font-bold ">{whychooseus.subTitle}</h1>
             <h1 className="md:text-3xl text-xl font-bold ">{whychooseus.title}</h1>
             <p className="text-justify font-medium">{whychooseus.desc}</p>
-            <Link className="" to="contact-us">
+            {/*<Link className="" to="contact-us">
               <FeaturedButton>Get Quote</FeaturedButton>
-            </Link>
+            </Link>*/} 
           </div>
           <div className="">
             {whychooseusCards.map((card, idx) => (

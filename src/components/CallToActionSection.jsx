@@ -12,10 +12,10 @@ const CallToActionSection = () => {
       <Container className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="flex flex-col space-y-7  justify-center">
           <h1 className="text-2xl md:text-4xl text-brandRed font-bold">
-            Let us help you find a solution that meets your Logistic & Immigration needs
+            Let us help you find a solution that meets your Logistic needs
           </h1>
           <h4 className="text-gray-500 font-medium text-xl">
-            Take advantage of our extensive experience and let World Wings find the right solution that fit your pocket as well
+            Take advantage of our extensive experience and let Globeflight find the right solution that fit your pocket as well
           </h4>
           <Link className="" to="/contact-us">
             <FeaturedButton>Get in Touch with us Today</FeaturedButton>

@@ -8,6 +8,9 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, SearchIcon, UserIcon } from "lucide-react";
+import Hero from "@/pages/Blog/sections/Hero";  // Import Hero section
+import CallToActionSection from "@/components/CallToActionSection";
+import Top from '@/components/Top';
 
 export default function BlogGrid() {
   const [posts, setPosts] = useState([]);
@@ -23,7 +26,7 @@ export default function BlogGrid() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true); // Show loader during fetch
+      setLoading(true);
       try {
         const [postsRes, recentRes, categoriesRes, relatedRes] = await Promise.all([
           axios.get(
@@ -38,11 +41,11 @@ export default function BlogGrid() {
         setRecentPosts(recentRes.data);
         setCategories(categoriesRes.data);
         setRelatedPosts(relatedRes.data);
-        setTotalPages(Math.min(8, parseInt(postsRes.headers['x-wp-totalpages'], 10))); // Restrict to 8 pages
+        setTotalPages(Math.min(8, parseInt(postsRes.headers['x-wp-totalpages'], 10)));
       } catch (err) {
         setError("Failed to load blog content");
       } finally {
-        setLoading(false); // Hide loader after fetch
+        setLoading(false);
       }
     };
 
@@ -51,7 +54,8 @@ export default function BlogGrid() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1); // Reset to the first page on new search
+    // The searchTerm will automatically trigger the data fetch via useEffect
   };
 
   const truncateText = (text, maxLength) => {
@@ -84,6 +88,8 @@ export default function BlogGrid() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Hero />  {/* Render Hero section */}
+
       <h1 className="text-3xl font-bold text-center mb-8">Latest News</h1>
 
       {/* Search Form */}
@@ -93,7 +99,7 @@ export default function BlogGrid() {
             type="search"
             placeholder="Search posts..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update search term as user types
             className="flex-grow"
           />
           <Button type="submit" variant="outline">
@@ -271,14 +277,17 @@ export default function BlogGrid() {
               <CardFooter>
                 <Link to={`/blog/${post.slug}`} className="w-full">
                   <Button variant="default" className="w-full bg-green-500 hover:bg-green-600">
-                    Read More
+                     Read More
                   </Button>
-                </Link>
+               </Link>
               </CardFooter>
             </Card>
           ))}
         </div>
       </div>
+
+      <CallToActionSection /> {/* Render Call to Action Section */}
+      <Top/>
     </div>
   );
 }

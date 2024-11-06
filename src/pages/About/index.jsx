@@ -5,6 +5,8 @@ import AboutUs from "./sections/AboutUs";
 import Relation from "./sections/Relation";
 import Team from "./sections/Team";
 import CallToActionSection from "@/components/CallToActionSection";
+import Top from '@/components/Top';
+
 
 const index = () => {
   return (
@@ -16,6 +18,7 @@ const index = () => {
         <Team />
       </Container>
       <CallToActionSection />
+      <Top/>
     </div>
   );
 };

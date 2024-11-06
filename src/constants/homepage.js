@@ -3,7 +3,7 @@ import { CalendarClock, Globe2, ShieldCheck, Truck } from "lucide-react";
 export const whychooseus = {
   title: "Safe, Reliable And Express Logistics Transport Solutions That Saves Your Time!",
   subTitle: "WHY CHOOSE GLOBEFLIGHT WORLDWIDE EXPRESS",
-  desc: "We pride ourselves on providing the best transport and shipping services available allover the world. Our skilled personnel, utilising the latest communications, tracking and processing , combined with decades of experience!We take great pride in providing unparalleled shipping and transportation services worldwide. Leveraging advanced tracking software, streamlined processing, effective communication, and drawing upon our knowledgeable staff's decades of experience, we extend our commitment to excellence to both logistics and immigration services.",
+  desc: "We pride ourselves on providing the best transport and shipping services available allover the world. Our skilled personnel, utilising the latest communications, tracking and processing, combined with decades of experience! We take great pride in providing unparalleled shipping and transportation services worldwide. Leveraging advanced tracking software, streamlined processing, effective communication, and drawing upon our knowledgeable staff's decades of experience, we extend our commitment to excellence to both logistics and immigration services.",
 };
 
 export const whychooseusCards = [

@@ -6,13 +6,11 @@ import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import Track from '@/pages/Track';
 
-
-
-
 import React, { Suspense } from 'react';
 
-// Lazy load the BlogPage component only
+// Lazy load the BlogPage and BlogDetail components
 const BlogPage = React.lazy(() => import('@/pages/Blog/sections/BlogPage'));
+const BlogDetail = React.lazy(() => import('@/pages/Blog/sections/BlogDetail'));
 
 function App() {
   return (
@@ -35,7 +33,15 @@ function App() {
             }
           />
           
-        
+          {/* Dynamic Blog Detail route */}
+          <Route
+            path="blog/:slug"
+            element={
+              <Suspense fallback={<div className="text-center py-20">Loading Blog Post...</div>}>
+                <BlogDetail />
+              </Suspense>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

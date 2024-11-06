@@ -45,16 +45,16 @@ const settings = {
 
 export default function OurClients() {
   return (
-    <section className="w-full py-12 bg-white">
+    <section className="w-full py-4 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-8">OUR CLIENTS</h2>
         <Slider {...settings} className="carousel-clients">
           {clients.map((client, index) => (
-            <div key={index} className="flex justify-center items-center p-2">
+            <div key={index} className="flex justify-center items-center p-4">
               <img
                 src={client.logo}
                 alt={client.name}
-                className="w-32 h-16 object-contain" // Reduced size for tighter fit
+                className="w-36 h-20 object-contain" 
               />
             </div>
           ))}

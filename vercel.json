@@ -1,8 +1,19 @@
 {
-    "build": {
-      "env": {
-        "NODE_ENV": "production"
+    "builds": [
+      {
+        "src": "index.html",
+        "use": "@vercel/static-build",
+        "config": { "distDir": "dist" }
       }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ],
+    "env": {
+      "NODE_ENV": "production"
     }
   }
   

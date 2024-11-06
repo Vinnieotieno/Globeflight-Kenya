@@ -4,6 +4,7 @@ import Container from "@/components/Container";
 import React from "react";
 import Track from "./sections/Track";
 import CallToActionSection from "@/components/CallToActionSection";
+import Top from '@/components/Top';
 
 
 const index = () => {
@@ -14,6 +15,7 @@ const index = () => {
           <Track />
         </Container>
         <CallToActionSection />
+        <Top />
       </div>
     );
   };

@@ -1,4 +1,6 @@
+// components/Service.jsx
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Card, CardDescription, CardHeader } from "@/components/ui/card"
 import { immigrationServices } from "@/constants/servicepage"
 
@@ -26,8 +28,8 @@ export default function Service() {
 
       {/* Services Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 my-5">
-        {immigrationServices.map((service, idx) => (
-          <Card key={idx} className="shadow-xl flex flex-col h-full">
+        {immigrationServices.map((service) => (
+          <Card key={service.id} className="shadow-xl flex flex-col h-full">
             <div className="relative h-40">
               <img
                 src={service.img}
@@ -46,12 +48,11 @@ export default function Service() {
                 </CardDescription>
               </div>
               <div className="mt-4">
-                <a 
-                  href={`/services/${service.id}`} 
-                  className="bg-green-500 text-white text-xs font-medium px-4 py-2 rounded-md w-full text-center hover:bg-green-600 transition-colors inline-block"
-                >
-                  Read More
-                </a>
+                <Link to={`/services/${service.id}`}>
+                  <span className="bg-green-500 text-white text-xs font-medium px-4 py-2 rounded-md w-full text-center hover:bg-green-600 transition-colors inline-block">
+                    Read More
+                  </span>
+                </Link>
               </div>
             </CardHeader>
           </Card>
