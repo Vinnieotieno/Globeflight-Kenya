@@ -5,7 +5,7 @@ import AboutUs from "./sections/AboutUs";
 import Relation from "./sections/Relation";
 import Team from "./sections/Team";
 import CallToActionSection from "@/components/CallToActionSection";
-import Top from '@/components/Top';
+import Top from '@/components/Top.jsx';
 
 
 const index = () => {
