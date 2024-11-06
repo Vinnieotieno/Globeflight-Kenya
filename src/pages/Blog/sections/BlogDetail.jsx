@@ -6,7 +6,7 @@ import axios from "axios"
 import Hero from "@/pages/Blog/sections/Hero";
 import CallToActionSection from "@/components/CallToActionSection"
 import LearnMore from "@/pages/Blog/sections/LearnMore";
-import Top from "@/components/Top.jsx"
+import Top from "@/components/Top"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
