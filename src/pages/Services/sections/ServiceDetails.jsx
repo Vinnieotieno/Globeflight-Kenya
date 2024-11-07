@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { immigrationServices } from "@/constants/servicepage"
 import CallToActionSection from "@/components/CallToActionSection"
-import Top from '../../components/Top'
+import Scroll from '../../components/Scroll'
 import Hero from "@/pages/Services/sections/Hero"
 
 export default function ServiceDetail() {
@@ -82,7 +82,7 @@ export default function ServiceDetail() {
 
       {/* Additional Sections */}
       <CallToActionSection />
-      <Top />
+      <Scroll />
     </div>
   )
 }

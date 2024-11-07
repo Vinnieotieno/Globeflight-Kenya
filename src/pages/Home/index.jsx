@@ -7,7 +7,7 @@ import PlanningProcess from './sections/PlanningProcess';
 import WhereWeShip from '../../components/WhereWeShip';
 import CallToActionSection from '@/components/CallToActionSection';
 import Testimonials from '../../components/Testimonials';
-import Top from '@/components/Top';
+import Scroll from '../../components/Scroll';
 import { whereWeWorkCards } from '@/constants/homepage';
 import Brands from './sections/Brands';
 import Clients from './sections/Clients';
@@ -30,7 +30,7 @@ const index = () => {
       <Brands />
       <Clients/>
       <CallToActionSection />
-      <Top />
+      <Scroll />
     </div>
   );
 }
