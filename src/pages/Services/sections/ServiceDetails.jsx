@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { immigrationServices } from "@/constants/servicepage"
 import CallToActionSection from "@/components/CallToActionSection"
-import ScrollOnSideSection from '../../components/ScrollOnSideSection'
+import ScrollOnSideSection from "@/components/ScrollOnSideSection";
 import Hero from "@/pages/Services/sections/Hero"
 
 export default function ServiceDetail() {
