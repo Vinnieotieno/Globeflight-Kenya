@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import React from "react";
 import Track from "./sections/Track";
 import CallToActionSection from "@/components/CallToActionSection";
-import Top from '@/components/Top';
+import Top from '../../components/Top';
 
 
 const index = () => {

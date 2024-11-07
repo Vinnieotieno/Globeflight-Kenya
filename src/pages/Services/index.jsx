@@ -7,7 +7,7 @@ import Stats from "./sections/Stats";
 import Service from "./sections/Service";
 import WhereWeShip from "@/components/WhereWeShip";
 import CallToActionSection from "@/components/CallToActionSection";
-import Top from '@/components/Top';
+import Top from '../../components/Top';
 import HowWeWork from "./sections/HowWeWork";
 import { whereWeWorkImmigrationCards } from "@/constants/homepage";
 

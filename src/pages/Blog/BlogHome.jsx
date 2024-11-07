@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import Hero from "./sections/Hero";  
 import BlogPage from "./sections/BlogPage"; 
 import CallToActionSection from "@/components/CallToActionSection"; 
-import Top from '@/components/Top';
+import Top from '../../components/Top';
 import BlogDetail from "@/pages/Blog/BlogDetail";
 
 const BlogHome = () => {
