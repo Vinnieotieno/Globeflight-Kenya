@@ -35,7 +35,7 @@ const Footer = ({ data }) => {
             <p className="text-sm mb-4">What do you think of Globeflight?</p>
             <Button
               className="w-full bg-green-600 hover:bg-green-700 text-white"
-              onClick={() => (window.location.href = '/feedback')}
+              onClick={() => (window.location.href = '/contact-us')}
             >
               Give Feedback Now!
             </Button>

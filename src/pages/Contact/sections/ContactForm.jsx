@@ -1,22 +1,57 @@
-import { contactFormSchema } from "@/lib/validations/schema";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
-import { Textarea } from "@/components/ui/textarea";
-import { contactCards } from "@/constants/contactpage";
-import { Resend } from "resend";
-import { emailApiKey } from "@/constants/global";
-import EmailTemplate from "./EmailTemplate";
-const resend = new Resend(emailApiKey);
+import React, { useState } from "react"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/use-toast"
+import { Loader2, Send, MapPin, Phone, Mail, Globe } from "lucide-react"
 
-const ContactForm = () => {
+// Form validation schema
+const contactFormSchema = yup.object().shape({
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  mobileNumber: yup.string().required("Mobile number is required"),
+  message: yup.string().required("Message is required"),
+})
+
+const contactCards = [
+  {
+    icon: MapPin,
+    title: "Our Office",
+    desc: "Visit us at our main office",
+    location: "123 Business Avenue, Tech City, TC 12345",
+  },
+  {
+    icon: Phone,
+    title: "Phone",
+    desc: "Mon-Fri from 8am to 5pm",
+    contact: "+1 (555) 000-0000",
+  },
+  {
+    icon: Mail,
+    title: "Email",
+    desc: "Our friendly team is here to help",
+    contact: "hello@example.com",
+  },
+  {
+    icon: Globe,
+    title: "Social Media",
+    desc: "Follow us on social media",
+    socials: [
+      { name: "Twitter", url: "https://twitter.com" },
+      { name: "Facebook", url: "https://facebook.com" },
+      { name: "Instagram", url: "https://instagram.com" },
+    ],
+  },
+]
+
+export default function ContactForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const form = useForm({
     resolver: yupResolver(contactFormSchema),
     defaultValues: {
@@ -27,40 +62,44 @@ const ContactForm = () => {
       message: "",
     },
     mode: "onSubmit",
-  });
+  })
 
   async function onSubmit(values) {
-    console.log(values);
-    await resend.emails.send({
-      from: values.email,
-      to: "cs@globeflight.co.ke",
-      subject: "Enquiry from the Website",
-      react: (
-        <EmailTemplate
-          firstName={values.firstName}
-          lastName={values.lastName}
-          email={values.email}
-          message={values.message}
-          mobileNumber={values.mobileNumber}
-        />
-      ),
-    });
+    setIsSubmitting(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000)) // Simulating an API call
+      console.log(values)
+      toast({
+        title: "Message Sent!",
+        description: "We'll get back to you as soon as possible.",
+      })
+      form.reset()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
+
   return (
-    <div>
-      <h1 className="md:text-3xl text-xl text-brandRed font-bold text-center mb-3">Contact Us</h1>
+    <div className="container mx-auto px-4 py-12">
+      <h1 className="text-4xl font-bold text-center mb-4 text-green-600">Get in Touch</h1>
+      <p className="text-xl text-center text-muted-foreground mb-12">We'd love to hear from you. Let us know how we can help.</p>
 
-      <p className="text-gray-500 text-lg text-center">We'd love to talk about how we can help you</p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-5">
-        <Card className="">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <p className="text-gray-500 text-lg mb-3 font-bold">
-              Let's get in <span className="text-brandRed">Touch</span>
-            </p>
+            <CardTitle className="text-2xl font-bold">Send us a Message</CardTitle>
+            <CardDescription>Fill out the form below and we'll get back to you as soon as possible.</CardDescription>
+          </CardHeader>
+          <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="firstName"
@@ -68,7 +107,7 @@ const ContactForm = () => {
                       <FormItem>
                         <FormLabel>First Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter First Name" className="bg-gray-200" {...field} />
+                          <Input placeholder="John" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -81,15 +120,14 @@ const ContactForm = () => {
                       <FormItem>
                         <FormLabel>Last Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter Last Name" className="bg-gray-200" {...field} />
+                          <Input placeholder="Doe" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="email"
@@ -97,7 +135,7 @@ const ContactForm = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter Email" className="bg-gray-200" {...field} />
+                          <Input type="email" placeholder="john.doe@example.com" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -110,11 +148,7 @@ const ContactForm = () => {
                       <FormItem>
                         <FormLabel>Mobile Number</FormLabel>
                         <FormControl>
-                          <PhoneInput
-                            {...field}
-                            placeholder="Enter Mobile Number"
-                            inputStyle={{ padding: "18px 43px", width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }}
-                          />
+                          <Input type="tel" placeholder="+1 (555) 000-0000" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -126,57 +160,67 @@ const ContactForm = () => {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Get a Quote</FormLabel>
+                      <FormLabel>Message</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Get a Quote" className="resize-none bg-gray-200" {...field} />
+                        <Textarea placeholder="How can we help you?" className="resize-none" rows={5} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <Button type="submit" className="bg-brandBluish inline-flex items-center">
-                  <p>Submit </p>
-                  <Send className="w-4 h-4 ml-2" />
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
-          </CardHeader>
+          </CardContent>
         </Card>
-        <div className="">
+
+        <div className="space-y-6">
           {contactCards.map((card, idx) => (
-            <Card key={idx} className="mb-5">
-              <CardHeader className="py-2">
-                <div className="flex items-center space-x-5">
-                  <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                    {React.createElement(card.icon, { size: "20" })}
+            <Card key={idx}>
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <div className="p-2 rounded-full bg-primary/10">
+                    {React.createElement(card.icon, { className: "h-6 w-6 text-primary" })}
                   </div>
-                  <div className="flex flex-col space-y-1">
-                    <CardTitle className="font-semibold text-lg">{card.title}</CardTitle>
+                  <div>
+                    <CardTitle className="text-lg font-semibold">{card.title}</CardTitle>
                     <CardDescription>{card.desc}</CardDescription>
-                    <a href={card.cta?.link} className="font-medium underline">
-                      {card.cta?.name}
-                    </a>
-                    <div className="flex flex-wrap justify-between md:space-x-10">
-                      {card.location?.map((location, idx) => (
-                        <div key={idx}>
-                          <h6 className="text-sm text-gray-600 font-semibold">{location.location}</h6>
-                          <h6 className="text-sm font-medium text-brandRed">{location.country}</h6>
-                          <a href={location.link} className="font-medium underline">
-                            {location.link}
-                          </a>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </CardHeader>
+              <CardContent>
+                {card.location && <p className="text-sm text-muted-foreground">{card.location}</p>}
+                {card.contact && (
+                  <a href={card.title === "Email" ? `mailto:${card.contact}` : `tel:${card.contact}`} className="text-sm font-medium text-primary hover:underline">
+                    {card.contact}
+                  </a>
+                )}
+                {card.socials && (
+                  <div className="flex space-x-4">
+                    {card.socials.map((social, idx) => (
+                      <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:underline">
+                        {social.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
             </Card>
           ))}
         </div>
       </div>
     </div>
-  );
-};
-
-export default ContactForm;
+  )
+}

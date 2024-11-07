@@ -1,45 +1,55 @@
-import Container from '@/components/Container';
-import FeaturedButton from '@/components/FeaturedButton';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { whychooseus, whychooseusCards } from '@/constants/homepage';
 import React from 'react'
-import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import Container from '@/components/Container'
+import FeaturedButton from '@/components/FeaturedButton'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { whychooseus, whychooseusCards } from '@/constants/homepage'
 
 const WhyChooseUs = () => {
   return (
-    <div className="relative">
-      <div className="py-10 md:mt-20  ">
-        <Container className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col space-y-7">
-            <h1 className="md:text-7x1 text-xl text-brandRed font-bold ">{whychooseus.subTitle}</h1>
-            <h1 className="md:text-3xl text-xl font-bold ">{whychooseus.title}</h1>
-            <p className="text-justify font-medium">{whychooseus.desc}</p>
-            {/*<Link className="" to="contact-us">
+    <section className="relative bg-gradient-to-b from-white to-gray-100 py-16 md:py-24">
+      <Container>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col space-y-6"
+          >
+            <span className="text-lg md:text-xl font-semibold text-green-600">{whychooseus.subTitle}</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">{whychooseus.title}</h2>
+            <p className="text-lg text-gray-700 leading-relaxed">{whychooseus.desc}</p>
+            <Link to="contact-us" className="inline-block mt-4">
               <FeaturedButton>Get Quote</FeaturedButton>
-            </Link>*/} 
-          </div>
-          <div className="">
+            </Link>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="grid gap-6"
+          >
             {whychooseusCards.map((card, idx) => (
-              <Card key={idx} className="mb-5">
-                <CardHeader className='py-3'>
-                  <div className="flex items-center space-x-5">
-                    <div className="h-12 w-12 rounded-full bg-green-500 flex items-center justify-center">
-                      {React.createElement(card.icon, { size: "20" })}
+              <Card key={idx} className="transform transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader className="p-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex-shrink-0 h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center">
+                      {React.createElement(card.icon, { size: "24" })}
                     </div>
-                    <div className="flex flex-col space-y-1">
-                      <CardTitle className="font-semibold text-lg">{card.title}</CardTitle>
-                      <CardDescription>{card.desc}</CardDescription>
-                     
+                    <div className="flex-grow">
+                      <CardTitle className="text-xl font-semibold mb-2">{card.title}</CardTitle>
+                      <CardDescription className="text-gray-600">{card.desc}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
               </Card>
             ))}
-          </div>
-        </Container>
-      </div>
-    </div>
-  );
+          </motion.div>
+        </div>
+      </Container>
+    </section>
+  )
 }
 
 export default WhyChooseUs
