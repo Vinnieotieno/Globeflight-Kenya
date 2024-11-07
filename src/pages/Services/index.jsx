@@ -7,7 +7,7 @@ import Stats from "./sections/Stats";
 import Service from "./sections/Service";
 import WhereWeShip from "@/components/WhereWeShip";
 import CallToActionSection from "@/components/CallToActionSection";
-import Scroll from '../../components/Scroll';
+import ScrollOnSideSection from '../../components/ScrollOnSideSection';
 import HowWeWork from "./sections/HowWeWork";
 import { whereWeWorkImmigrationCards } from "@/constants/homepage";
 
@@ -26,7 +26,7 @@ const HomePage = () => {
         <HowWeWork />
       </Container>
       <CallToActionSection />
-      < Scroll/>
+      < ScrollOnSideSection/>
     </div>
   );
 };

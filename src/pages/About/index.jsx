@@ -5,7 +5,7 @@ import AboutUs from "./sections/AboutUs";
 import Relation from "./sections/Relation";
 import Team from "./sections/Team";
 import CallToActionSection from "@/components/CallToActionSection";
-import Scroll from '../../components/Scroll';
+import ScrollOnSideSection from '../../components/ScrollOnSideSection';
 
 
 const index = () => {
@@ -18,7 +18,7 @@ const index = () => {
         <Team />
       </Container>
       <CallToActionSection />
-      <Scroll/>
+      <ScrollOnSideSection/>
     </div>
   );
 };

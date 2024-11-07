@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import Hero from "./sections/Hero";  
 import BlogPage from "./sections/BlogPage"; 
 import CallToActionSection from "@/components/CallToActionSection"; 
-import Scroll from '../../components/Scroll';
+import ScrollOnSideSection from '../../components/ScrollOnSideSection';
 import BlogDetail from "@/pages/Blog/BlogDetail";
 
 const BlogHome = () => {
@@ -16,7 +16,7 @@ const BlogHome = () => {
         <Route path="/blog/:slug" element={<BlogDetail />} />
       </Container>
       <CallToActionSection />
-      <Scroll/>
+      <ScrollOnSideSection/>
     </div>
   );
 };

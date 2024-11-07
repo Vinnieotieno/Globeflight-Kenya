@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, SearchIcon, UserIcon, TagIcon } from "lucide-react"
 import Hero from "@/pages/Blog/sections/Hero";
 import CallToActionSection from "@/components/CallToActionSection"
-import Scroll from '../../components/Scroll'
+import ScrollOnSideSection from '../../components/ScrollOnSideSection'
 
 export default function BlogGrid() {
   const [posts, setPosts] = useState([])
@@ -291,7 +291,7 @@ export default function BlogGrid() {
         </div>
 
         <CallToActionSection />
-        <Scroll />
+        <ScrollOnSideSection />
       </div>
     </div>
   )

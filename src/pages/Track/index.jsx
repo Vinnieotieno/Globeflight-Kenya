@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import React from "react";
 import Track from "./sections/Track";
 import CallToActionSection from "@/components/CallToActionSection";
-import Scroll from '../../components/Scroll';
+import ScrollOnSideSection from '../../components/ScrollOnSideSection';
 
 
 const index = () => {
@@ -15,7 +15,7 @@ const index = () => {
           <Track />
         </Container>
         <CallToActionSection />
-        <Scroll />
+        <ScrollOnSideSection />
       </div>
     );
   };

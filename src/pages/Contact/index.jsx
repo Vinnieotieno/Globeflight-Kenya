@@ -3,7 +3,7 @@ import React from "react";
 import Hero from "./sections/Hero";
 import ContactForm from "./sections/ContactForm";
 import FAQ from './sections/Faq'
-import Scroll from '../../components/Scroll';
+import ScrollOnSideSection from '../../components/ScrollOnSideSection';
 
 const index = () => {
   return (
@@ -13,7 +13,7 @@ const index = () => {
         <ContactForm />
         <FAQ/>
       </Container>
-      <Scroll/>
+      <ScrollOnSideSection/>
     </div>
   );
 };
