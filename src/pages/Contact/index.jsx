@@ -3,7 +3,7 @@ import React from "react";
 import Hero from "./sections/Hero";
 import ContactForm from "./sections/ContactForm";
 import FAQ from './sections/Faq'
-import ScrollOnSideSection from '../../components/ScrollOnSideSection';
+import ScrollOnSideSection from "@/components/ScrollOnSideSection";
 
 const index = () => {
   return (

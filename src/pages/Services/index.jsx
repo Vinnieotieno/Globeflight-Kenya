@@ -7,7 +7,7 @@ import Stats from "./sections/Stats";
 import Service from "./sections/Service";
 import WhereWeShip from "@/components/WhereWeShip";
 import CallToActionSection from "@/components/CallToActionSection";
-import ScrollOnSideSection from '../../components/ScrollOnSideSection';
+import ScrollOnSideSection from "@/components/ScrollOnSideSection";
 import HowWeWork from "./sections/HowWeWork";
 import { whereWeWorkImmigrationCards } from "@/constants/homepage";
 

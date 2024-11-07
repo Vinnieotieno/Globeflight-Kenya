@@ -4,7 +4,7 @@ import Container from "@/components/Container";
 import React from "react";
 import Track from "./sections/Track";
 import CallToActionSection from "@/components/CallToActionSection";
-import ScrollOnSideSection from '../../components/ScrollOnSideSection';
+import ScrollOnSideSection from "@/components/ScrollOnSideSection";
 
 
 const index = () => {
