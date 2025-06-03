@@ -11,6 +11,10 @@ import Track from '@/pages/Track';
 const BlogPage = React.lazy(() => import('@/pages/Blog/sections/BlogPage'));
 const BlogDetail = React.lazy(() => import('@/pages/Blog/sections/BlogDetail'));
 const ServiceDetail = React.lazy(() => import('@/pages/Services/sections/ServiceDetails')); // Lazy load ServiceDetail
+import BlogHome from "@/pages/Blog/BlogHome"; // <-- Import BlogHome
+import BlogCategoryPage from "@/pages/Blog/sections/BlogCategoryPage"; // <-- Import BlogCategoryPage
+const JobPage = React.lazy(() => import('@/pages/JobPage')); // <-- Add this line
+const JobDetail = React.lazy(() => import('@/pages/JobDetail')); // <-- Add this line
 
 function App() {
   return (
@@ -24,11 +28,11 @@ function App() {
           <Route path="contact-us" element={<Contact />} />
           <Route path="track" element={<Track />} />
 
-          {/* Dynamic Service Detail Route */}
+          {/* Dynamic Service Detail Route - change :id to :slug */}
           <Route
-            path="services/:id"
+            path="services/:slug"
             element={
-              <Suspense fallback={<div className="text-center py-20">Loading Service Details...</div>}>
+              <Suspense fallback={<div className="py-20 text-center">Loading Service Details...</div>}>
                 <ServiceDetail />
               </Suspense>
             }
@@ -38,7 +42,7 @@ function App() {
           <Route
             path="blog"
             element={
-              <Suspense fallback={<div className="text-center py-20">Loading Blog Page...</div>}>
+              <Suspense fallback={<div className="py-20 text-center">Loading Blog Page...</div>}>
                 <BlogPage />
               </Suspense>
             }
@@ -46,8 +50,29 @@ function App() {
           <Route
             path="blog/:slug"
             element={
-              <Suspense fallback={<div className="text-center py-20">Loading Blog Post...</div>}>
+              <Suspense fallback={<div className="py-20 text-center">Loading Blog Post...</div>}>
                 <BlogDetail />
+              </Suspense>
+            }
+          />
+          {/* Blog Home with nested routes */}
+          <Route path="blog/*" element={<BlogHome />} />
+          {/* Direct category route at root (optional, only if you want /category/:slug to work) */}
+          <Route path="category/:slug" element={<BlogCategoryPage />} />
+          {/* Add Job Page route */}
+          <Route
+            path="jobs"
+            element={
+              <Suspense fallback={<div className="py-20 text-center">Loading Jobs...</div>}>
+                <JobPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="jobs/:slug"
+            element={
+              <Suspense fallback={<div className="py-20 text-center">Loading Job Details...</div>}>
+                <JobDetail />
               </Suspense>
             }
           />

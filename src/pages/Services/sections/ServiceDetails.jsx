@@ -9,19 +9,48 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { immigrationServices } from "@/constants/servicepage"
 import CallToActionSection from "@/components/CallToActionSection"
 import ScrollOnSideSection from "@/components/ScrollOnSideSection"
 import Hero from "@/pages/Services/sections/Hero"
-import { ChevronLeft, ChevronRight, Calendar, Share2, Facebook, Twitter, Linkedin, MapPin, Clock, DollarSign, FileText, Phone, Mail } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Calendar, Share2, Facebook, Twitter, Linkedin, MapPin, Clock, Phone, Mail } from 'lucide-react'
+
+const API_URL = "http://localhost:5000/api/services/public";
 
 export default function ServiceDetail() {
-  const { id } = useParams()
-  const service = immigrationServices.find(s => s.id === id)
+  const { slug } = useParams(); // <-- use slug, not id
+  const [service, setService] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [activeSection, setActiveSection] = useState('')
   const [readingProgress, setReadingProgress] = useState(0)
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [isSharingModalOpen, setIsSharingModalOpen] = useState(false)
+  const [allServices, setAllServices] = useState([])
+
+  useEffect(() => {
+    async function fetchService() {
+      setLoading(true)
+      setError("")
+      try {
+        // Fetch by slug (or id fallback)
+        let res = await fetch(`http://localhost:5000/api/services/public/${slug}`);
+        let data = await res.json();
+        if (data.success && data.data) {
+          setService(data.data);
+          // Fetch all services for related
+          const allRes = await fetch('http://localhost:5000/api/services/public?limit=100');
+          const allData = await allRes.json();
+          setAllServices(allData.success ? allData.data.services : []);
+        } else {
+          setError("Service not found");
+        }
+      } catch (err) {
+        setError("Failed to fetch service");
+      }
+      setLoading(false);
+    }
+    fetchService();
+  }, [slug])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,24 +74,37 @@ export default function ServiceDetail() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  if (!service) {
-    return <div className="text-center py-20 text-2xl text-red-500">Service not found</div>
-  }
+  if (loading) return <div className="py-20 text-center">Loading...</div>
+  if (error) return <div className="py-20 text-center text-red-500">{error}</div>
+  if (!service) return null
 
-  const serviceIndex = immigrationServices.indexOf(service)
-  const previousService = serviceIndex > 0 ? immigrationServices[serviceIndex - 1] : null
-  const nextService = serviceIndex < immigrationServices.length - 1 ? immigrationServices[serviceIndex + 1] : null
-  const relatedServices = immigrationServices
-    .filter((s) => s.id !== id && s.id !== previousService?.id && s.id !== nextService?.id)
+  // Find previous and next services
+  const currentIndex = allServices.findIndex(s => String(s.id) === String(slug))
+  const previousService = currentIndex > 0 ? allServices[currentIndex - 1] : null
+  const nextService = currentIndex < allServices.length - 1 ? allServices[currentIndex + 1] : null
+  // Related: up to 3 others, not current, not prev/next
+  const relatedServices = allServices
+    .filter(s => String(s.id) !== String(slug) && s.id !== previousService?.id && s.id !== nextService?.id)
     .slice(0, 3)
 
+  // Gallery images
+  const galleryImages = Array.isArray(service.galleryUrls) && service.galleryUrls.length > 0
+    ? service.galleryUrls
+    : service.imageUrl ? [service.imageUrl] : []
+
+  // FAQ
+  const faqs = Array.isArray(service.faq) && service.faq.length > 0
+    ? service.faq
+    : []
+
+  // Table of Contents
   const tableOfContents = [
     { id: 'overview', title: 'Overview' },
     { id: 'details', title: 'Service Details' },
     { id: 'gallery', title: 'Photo Gallery' },
     { id: 'faq', title: 'FAQ' },
     { id: 'related', title: 'Related Services' },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
@@ -111,12 +153,27 @@ export default function ServiceDetail() {
               <h1 className="text-4xl font-bold text-gray-800 mb-6">{service.title}</h1>
               
               <section id="overview" className="mb-12">
-                <img 
-                  src={service.img} 
-                  alt={service.title} 
-                  className="w-full h-64 object-cover rounded-lg shadow-lg mb-6"
-                />
-                <p className="text-lg text-gray-700 leading-relaxed">{service.desc}</p>
+                {service.imageUrl && (
+                  <img 
+                    src={service.imageUrl.startsWith('/uploads/')
+                      ? `http://localhost:5000${service.imageUrl}`
+                      : service.imageUrl}
+                    alt={service.title}
+                    className="w-full h-64 object-cover rounded-lg shadow-lg mb-6"
+                  />
+                )}
+                <p className="text-lg text-gray-700 leading-relaxed mb-2">{service.shortDescription}</p>
+                <p className="text-base text-gray-600">{service.description}</p>
+                {service.keyBenefits && service.keyBenefits.length > 0 && (
+                  <div className="mt-4">
+                    <h3 className="font-semibold mb-2">Key Benefits:</h3>
+                    <ul className="list-disc ml-6">
+                      {service.keyBenefits.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </section>
 
               <section id="details" className="mb-12">
@@ -164,58 +221,68 @@ export default function ServiceDetail() {
               <section id="gallery" className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Photo Gallery</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <img
-                      key={i}
-                      src={service.img}
-                      alt={`${service.title} Image ${i}`}
-                      className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                    />
-                  ))}
+                  {galleryImages.length > 0 ? (
+                    galleryImages.map((imgUrl, i) => (
+                      <img
+                        key={i}
+                        src={imgUrl.startsWith('/uploads/')
+                          ? `http://localhost:5000${imgUrl}`
+                          : imgUrl}
+                        alt={`${service.title} Image ${i + 1}`}
+                        className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-3 text-gray-400 text-center">No gallery images available.</div>
+                  )}
                 </div>
               </section>
 
               <section id="faq" className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="item-1">
-                    <AccordionTrigger>What documents do I need?</AccordionTrigger>
-                    <AccordionContent>
-                      The required documents may vary depending on your specific case. Generally, you'll need identification, proof of residence, and relevant immigration forms.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-2">
-                    <AccordionTrigger>How long does the process take?</AccordionTrigger>
-                    <AccordionContent>
-                      The duration of the process can vary significantly based on the type of service and individual circumstances. We strive to complete all processes as efficiently as possible.
-                    </AccordionContent>
-                  </AccordionItem>
-                  <AccordionItem value="item-3">
-                    <AccordionTrigger>What are the fees involved?</AccordionTrigger>
-                    <AccordionContent>
-                      Fees depend on the specific service and can include government filing fees and our service charges. We provide a detailed breakdown of all costs during our initial consultation.
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {faqs.length > 0 ? (
+                  <Accordion type="single" collapsible>
+                    {faqs.map((faq, idx) => (
+                      <AccordionItem value={`item-${idx}`} key={idx}>
+                        <AccordionTrigger>{faq.question}</AccordionTrigger>
+                        <AccordionContent>
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                ) : (
+                  <div className="text-gray-400">No FAQs available for this service.</div>
+                )}
               </section>
 
               <section id="related" className="mb-12">
                 <h2 className="text-2xl font-bold text-gray-800 mb-6">Related Services</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {relatedServices.map((related) => (
+                  {relatedServices.length > 0 ? relatedServices.map((related) => (
                     <Card key={related.id} className="hover:shadow-lg transition-shadow duration-200">
                       <CardHeader>
-                        <img src={related.img} alt={related.title} className="w-full h-32 object-cover rounded-t-lg" />
+                        {related.imageUrl && (
+                          <img
+                            src={related.imageUrl.startsWith('/uploads/')
+                              ? `http://localhost:5000${related.imageUrl}`
+                              : related.imageUrl}
+                            alt={related.title}
+                            className="w-full h-32 object-cover rounded-t-lg"
+                          />
+                        )}
                       </CardHeader>
                       <CardContent>
                         <CardTitle className="mb-2">{related.title}</CardTitle>
-                        <p className="text-sm text-gray-600">{related.desc.slice(0, 100)}...</p>
+                        <p className="text-sm text-gray-600">{related.shortDescription || related.description?.slice(0, 100)}...</p>
                         <Link to={`/services/${related.id}`} className="mt-4 inline-block">
                           <Button variant="outline">Learn More</Button>
                         </Link>
                       </CardContent>
                     </Card>
-                  ))}
+                  )) : (
+                    <div className="col-span-3 text-gray-400 text-center">No related services found.</div>
+                  )}
                 </div>
               </section>
 

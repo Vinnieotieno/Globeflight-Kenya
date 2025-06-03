@@ -27,19 +27,19 @@ export default function Navbar({ data }) {
   return (
     <header className="w-full fixed top-0 left-0 right-0 z-[999]">
       {/* Top contact bar */}
-      <div className="bg-gradient-to-r from-green-600 to-green-400 text-white py-2 px-4">
-        <div className="container mx-auto flex flex-wrap justify-between items-center text-sm md:flex-nowrap">
+      <div className="px-4 py-2 text-white bg-gradient-to-r from-green-600 to-green-400">
+        <div className="container flex flex-wrap items-center justify-between mx-auto text-sm md:flex-nowrap">
           <div className="flex items-center space-x-4">
-            <a href="mailto:saleskenya@globeflight.co.ke" className="flex items-center hover:text-green-200 transition-colors duration-200">
+            <a href="mailto:saleskenya@globeflight.co.ke" className="flex items-center transition-colors duration-200 hover:text-green-200">
               <Mail className="w-4 h-4 mr-2" />
               saleskenya@globeflight.co.ke
             </a>
-            <a href="tel:+254729341277" className="flex items-center hover:text-green-200 transition-colors duration-200">
+            <a href="tel:+254729341277" className="flex items-center transition-colors duration-200 hover:text-green-200">
               <Phone className="w-4 h-4 mr-2" />
               +254729341277
             </a>
           </div>
-          <div className="flex items-center mt-2 md:mt-0 hover:text-green-200 transition-colors duration-200">
+          <div className="flex items-center mt-2 transition-colors duration-200 md:mt-0 hover:text-green-200">
             <MapPin className="w-4 h-4 mr-2" />
             NEXTGEN MALL, 3rd Floor, Suite 39/40, Mombasa Road
           </div>
@@ -48,14 +48,14 @@ export default function Navbar({ data }) {
 
       {/* Main navigation bar */}
       <nav className={`py-4 bg-white transition-all duration-300 ${isSticky ? "shadow-lg" : ""}`}>
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container flex items-center justify-between mx-auto">
           {/* Logo */}
           <Link to="/">
-            <img src={data.logo} className="w-33 h-20 object-cover" alt="globeflight.co.ke" />
+            <img src={data.logo} className="object-cover h-20 w-33" alt="globeflight.co.ke" />
           </Link>
 
           {/* Desktop menu */}
-          <ul className="hidden md:flex space-x-6">
+          <ul className="hidden space-x-6 md:flex">
             {data.navItems.map(({ link, path, external }) => (
               <li key={path} className="relative group">
                 {external ? (
@@ -63,7 +63,7 @@ export default function Navbar({ data }) {
                     href={path}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-700 hover:text-green-500 transition-colors duration-200"
+                    className="text-gray-700 transition-colors duration-200 hover:text-green-500"
                   >
                     {link}
                   </a>
@@ -96,7 +96,7 @@ export default function Navbar({ data }) {
                 href="https://bigdrop.co.ke/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-green-500 transition-colors duration-200"
+                className="text-gray-700 transition-colors duration-200 hover:text-green-500"
               >
                 Bigdrop
               </a>
@@ -113,20 +113,31 @@ export default function Navbar({ data }) {
               </Link>
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 transition-all duration-300 group-hover:w-full"></span>
             </li>
+            <li className="relative group">
+              <Link
+                to="/jobs"
+                className={`text-gray-700 hover:text-green-500 transition-colors duration-200 ${
+                  pathname === "/jobs" ? "font-bold text-green-500" : ""
+                }`}
+              >
+                Careers
+              </Link>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 transition-all duration-300 group-hover:w-full"></span>
+            </li>
           </ul>
 
           {/* Get a Quote button - Desktop */}
-          <Button asChild className="hidden md:inline-flex bg-green-500 text-white hover:bg-green-600 transition-colors duration-200">
+          <Button asChild className="hidden text-white transition-colors duration-200 bg-green-500 md:inline-flex hover:bg-green-600">
             <Link to="/contact-us">Get A Quote</Link>
           </Button>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-gray-700 focus:outline-none focus:text-green-500"
+            className="text-gray-700 md:hidden focus:outline-none focus:text-green-500"
             onClick={toggleMobileMenu}
             aria-label="Toggle mobile menu"
           >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </nav>
@@ -139,9 +150,9 @@ export default function Navbar({ data }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-white shadow-lg"
+            className="bg-white shadow-lg md:hidden"
           >
-            <div className="container mx-auto py-4">
+            <div className="container py-4 mx-auto">
               <ul className="space-y-4">
                 {data.navItems.map(({ link, path, external }) => (
                   <li key={path}>
@@ -150,7 +161,7 @@ export default function Navbar({ data }) {
                         href={path}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block text-gray-700 hover:text-green-500 transition-colors duration-200"
+                        className="block text-gray-700 transition-colors duration-200 hover:text-green-500"
                         onClick={toggleMobileMenu}
                       >
                         {link}
@@ -184,7 +195,7 @@ export default function Navbar({ data }) {
                     href="https://bigdrop.co.ke/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block text-gray-700 hover:text-green-500 transition-colors duration-200"
+                    className="block text-gray-700 transition-colors duration-200 hover:text-green-500"
                     onClick={toggleMobileMenu}
                   >
                     Bigdrop
@@ -202,7 +213,18 @@ export default function Navbar({ data }) {
                   </Link>
                 </li>
                 <li>
-                  <Button asChild className="w-full bg-green-500 text-white hover:bg-green-600 transition-colors duration-200">
+                  <Link
+                    to="/jobs"
+                    className={`block text-gray-700 hover:text-green-500 transition-colors duration-200 ${
+                      pathname === "/jobs" ? "font-bold text-green-500" : ""
+                    }`}
+                    onClick={toggleMobileMenu}
+                  >
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Button asChild className="w-full text-white transition-colors duration-200 bg-green-500 hover:bg-green-600">
                     <Link to="/contact-us" onClick={toggleMobileMenu}>
                       Get A Quote
                     </Link>

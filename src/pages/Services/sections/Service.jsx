@@ -1,43 +1,51 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { immigrationServices } from '@/constants/servicepage';
-import { Search, ArrowRight, Star } from 'lucide-react';
+import { Search, ArrowRight, Star, Package } from 'lucide-react';
 
 export default function Service() {
-  const [services, setServices] = useState(immigrationServices);
+  const [services, setServices] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [featuredService, setFeaturedService] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const navigate = useNavigate();
 
+  // Fetch services from backend API
   useEffect(() => {
-    const featured = immigrationServices.find(service => service.featured);
-    setFeaturedService(featured);
+    async function fetchServices() {
+      try {
+        const res = await fetch('http://localhost:5000/api/services/public?limit=100');
+        const data = await res.json();
+        if (data.success) {
+          setServices(data.data.services);
+          // Optionally, pick a featured service (e.g., first one)
+          setFeaturedService(data.data.services.find(s => s.featured) || data.data.services[0]);
+        }
+      } catch (err) {
+        setServices([]);
+      }
+    }
+    fetchServices();
   }, []);
 
-  useEffect(() => {
-    let filteredServices = immigrationServices;
-    if (searchTerm) {
-      filteredServices = filteredServices.filter(service =>
-        service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.desc.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    if (selectedCategory !== 'all') {
-      filteredServices = filteredServices.filter(service => service.category === selectedCategory);
-    }
-    setServices(filteredServices);
-  }, [searchTerm, selectedCategory]);
+  // Filter services by search/category
+  const filteredServices = services.filter(service => {
+    const matchesSearch = service.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (service.shortDescription || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (service.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+    // If you have category, add category filtering here
+    return matchesSearch && (selectedCategory === 'all' || (service.category === selectedCategory));
+  });
 
-  const categories = ['all', ...new Set(immigrationServices.map(service => service.category || 'Uncategorized'))];
+  const categories = ['all', ...Array.from(new Set(services.map(s => s.category || 'Uncategorized')))];
 
   const openModal = (service) => {
     setSelectedService(service);
@@ -45,6 +53,13 @@ export default function Service() {
   };
 
   const closeModal = () => setIsModalOpen(false);
+
+  // Helper to create slug from title
+  const slugify = (str) =>
+    str
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
 
   return (
     <div className="py-16 bg-gradient-to-b from-green-50 to-white">
@@ -66,7 +81,7 @@ export default function Service() {
               <div className="md:flex">
                 <div className="md:w-1/2">
                   <img
-                    src={featuredService.img}
+                    src={featuredService.imageUrl}
                     alt={featuredService.title}
                     className="w-full h-64 md:h-full object-cover"
                   />
@@ -78,7 +93,14 @@ export default function Service() {
                       <h3 className="text-2xl font-bold">Featured Service</h3>
                     </div>
                     <h4 className="text-xl font-semibold mb-2">{featuredService.title}</h4>
-                    <p className="text-gray-600 mb-4">{featuredService.desc}</p>
+                    <p className="text-gray-600 mb-4">{featuredService.shortDescription || featuredService.description}</p>
+                    {featuredService.keyBenefits && featuredService.keyBenefits.length > 0 && (
+                      <ul className="list-disc ml-5 mb-4">
+                        {featuredService.keyBenefits.map((b, i) => (
+                          <li key={i} className="text-sm text-green-700">{b}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   <Link to={`/services/${featuredService.id}`}>
                     <Button className="w-full text-green-600 hover:bg-green-700">
@@ -119,28 +141,40 @@ export default function Service() {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
-            <Card key={service.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-              <img
-                src={service.img}
-                alt={service.title}
-                className="w-full h-48 object-cover"
-              />
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg font-semibold">
-                  {React.createElement(service.icon, { className: "mr-2" })}
-                  {service.title}
-                </CardTitle>
-                <CardDescription className="line-clamp-2">{service.desc}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-between items-center">
-                <Button variant="outline" onClick={() => openModal(service)}>Quick View</Button>
-                <Link to={`/services/${service.id}`}>
-                  <Button className="text-green-600 hover:bg-green-700">Read More</Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+          {filteredServices.map((service) => {
+            const slug = service.slug || slugify(service.title);
+            return (
+              <Card key={service.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <img
+                  src={service.imageUrl}
+                  alt={service.title}
+                  className="w-full h-48 object-cover"
+                />
+                <CardHeader>
+                  <CardTitle className="flex items-center text-lg font-semibold">
+                    <Package className="mr-2" />
+                    {service.title}
+                  </CardTitle>
+                  <CardDescription className="line-clamp-2">
+                    {service.shortDescription || service.description}
+                  </CardDescription>
+                  {service.keyBenefits && service.keyBenefits.length > 0 && (
+                    <ul className="list-disc ml-5 mt-2">
+                      {service.keyBenefits.map((b, i) => (
+                        <li key={i} className="text-xs text-green-700">{b}</li>
+                      ))}
+                    </ul>
+                  )}
+                </CardHeader>
+                <CardContent className="flex justify-between items-center">
+                  <Button variant="outline" onClick={() => openModal(service)}>Quick View</Button>
+                  <Link to={`/services/${slug}`}>
+                    <Button className="text-green-600 hover:bg-green-700">Read More</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* View All Services Button */}
@@ -159,20 +193,27 @@ export default function Service() {
               <DialogHeader>
                 <DialogTitle>{selectedService.title}</DialogTitle>
                 <DialogDescription>
-                  {React.createElement(selectedService.icon, { className: "mb-2" })}
-                  {selectedService.desc}
+                  <Package className="mb-2" />
+                  {selectedService.shortDescription || selectedService.description}
+                  {selectedService.keyBenefits && selectedService.keyBenefits.length > 0 && (
+                    <ul className="list-disc ml-5 mt-2">
+                      {selectedService.keyBenefits.map((b, i) => (
+                        <li key={i} className="text-xs text-green-700">{b}</li>
+                      ))}
+                    </ul>
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4">
                 <img
-                  src={selectedService.img}
+                  src={selectedService.imageUrl}
                   alt={selectedService.title}
                   className="w-full h-48 object-cover rounded-md"
                 />
               </div>
               <DialogFooter className="mt-4">
                 <Button onClick={closeModal} variant="outline">Close</Button>
-                <Link to={`/services/${selectedService.id}`}>
+                <Link to={`/services/${selectedService.slug || slugify(selectedService.title)}`}>
                   <Button>Learn More</Button>
                 </Link>
               </DialogFooter>

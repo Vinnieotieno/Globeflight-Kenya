@@ -36,3 +36,4 @@ const index = () => {
 }
 
 export default index
+// No changes needed unless you have fetches to /testimonials here

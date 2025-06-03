@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Container from "@/components/Container"
-import { testimonials } from "@/constants/homepage"
 import {
   Quote,
   PauseCircle,
@@ -116,134 +115,19 @@ const TestimonialCard = ({ testimonial, isActive }) => {
   )
 }
 
-const ShareExperienceForm = ({ onClose, onSubmit }) => {
-  const [name, setName] = useState("")
-  const [title, setTitle] = useState("")
-  const [review, setReview] = useState("")
-  const [rating, setRating] = useState(5)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errors, setErrors] = useState({})
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    // Validate form
-    const newErrors = {}
-    if (!name.trim()) newErrors.name = "Name is required"
-    if (!review.trim()) newErrors.review = "Review is required"
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
-    }
-
-    setIsSubmitting(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      onSubmit({
-        name,
-        title,
-        review,
-        rating,
-        id: Date.now(), // Generate a unique ID
-      })
-
-      // Show success message or close dialog
-      onClose()
-    } catch (error) {
-      console.error("Error submitting testimonial:", error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">
-          Your Name <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="John Doe"
-          className={errors.name ? "border-red-500" : ""}
-        />
-        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="title">Your Title/Company (Optional)</Label>
-        <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Supply Chain Manager" />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="rating">Your Rating</Label>
-        <div className="flex items-center space-x-2">
-          <RatingStars rating={rating} size="lg" className="text-yellow-400" onRatingChange={setRating} />
-          <span className="text-gray-500 ml-2">{rating}/5</span>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="review">
-          Your Experience <span className="text-red-500">*</span>
-        </Label>
-        <Textarea
-          id="review"
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-          placeholder="Share your experience with Globeflight..."
-          rows={5}
-          className={errors.review ? "border-red-500" : ""}
-        />
-        {errors.review && <p className="text-red-500 text-sm">{errors.review}</p>}
-      </div>
-
-      <div className="flex justify-end space-x-3 pt-2">
-        <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-          Cancel
-        </Button>
-        <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <svg
-                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Submitting...
-            </>
-          ) : (
-            <>
-              <Send className="mr-2 h-4 w-4" />
-              Submit Testimonial
-            </>
-          )}
-        </Button>
-      </div>
-    </form>
-  )
-}
+const API_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL)
+    ? import.meta.env.VITE_API_URL
+    : (typeof window !== "undefined" && window.location.hostname === "localhost"
+        ? "http://localhost:5000/api"
+        : "https://globeflight.co.ke/api");
 
 const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isAutoPlay, setIsAutoPlay] = useState(true)
   const [visibleCount, setVisibleCount] = useState(3)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [testimonialsList, setTestimonialsList] = useState(testimonials)
+  const [testimonialsList, setTestimonialsList] = useState([]);
+  const [fetchError, setFetchError] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
   const isDesktop = useMediaQuery("(min-width: 1024px)")
@@ -280,6 +164,49 @@ const Testimonials = () => {
     }
   }, [showSuccessMessage])
 
+  useEffect(() => {
+    // Fetch published testimonials from backend
+    const fetchTestimonials = async () => {
+      try {
+        const apiUrl = `${API_BASE}/testimonials/public`;
+        console.log("Fetching testimonials from:", apiUrl); // Debug log
+        const res = await fetch(apiUrl, { credentials: "include" });
+        if (!res.ok) {
+          console.error("API response not ok:", res.status, res.statusText);
+          throw new Error("Failed to fetch testimonials");
+        }
+        const data = await res.json();
+        console.log("API testimonials response:", data); // Debug log
+
+        // Defensive: handle both array and object response
+        let testimonialsArr = Array.isArray(data.data)
+          ? data.data
+          : (data.data && data.data.testimonials ? data.data.testimonials : []);
+
+        if (data.success && Array.isArray(testimonialsArr) && testimonialsArr.length > 0) {
+          setTestimonialsList(
+            testimonialsArr.map((t) => ({
+              id: t.id,
+              name: t.name,
+              title: t.position || t.company || "",
+              review: t.content,
+              rating: t.rating,
+            }))
+          );
+          setFetchError(false);
+        } else {
+          setTestimonialsList([]);
+          setFetchError(true);
+        }
+      } catch (e) {
+        setTestimonialsList([]);
+        setFetchError(true);
+        console.error("Error fetching testimonials:", e);
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
   const handlePrev = () => {
     setActiveIndex((prev) => (prev === 0 ? testimonialsList.length - visibleCount : prev - 1))
   }
@@ -292,26 +219,9 @@ const Testimonials = () => {
     setIsAutoPlay(!isAutoPlay)
   }
 
-  const openShareDialog = () => {
-    setIsDialogOpen(true)
-    // Pause autoplay when dialog is open
-    setIsAutoPlay(false)
-  }
-
-  const closeShareDialog = () => {
-    setIsDialogOpen(false)
-  }
-
-  const handleTestimonialSubmit = (newTestimonial) => {
-    // Add the new testimonial to the list
-    setTestimonialsList([newTestimonial, ...testimonialsList])
-    // Show success message
-    setShowSuccessMessage(true)
-    // Close dialog
-    setIsDialogOpen(false)
-    // Resume autoplay
-    setIsAutoPlay(true)
-  }
+  // Replace this with your actual Google review link:
+  const GOOGLE_REVIEW_URL = "https://search.google.com/local/writereview?placeid=YOUR_PLACE_ID";
+  // Example: const GOOGLE_REVIEW_URL = "https://g.page/r/CfYw3b6k3k8CEBM/review";
 
   // Get visible testimonials based on activeIndex and visibleCount
   const visibleTestimonials = testimonialsList.slice(activeIndex, activeIndex + visibleCount)
@@ -374,19 +284,25 @@ const Testimonials = () => {
           {/* Custom carousel implementation */}
           <div className="overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="wait">
-                {visibleTestimonials.map((testimonial, idx) => (
-                  <motion.div
-                    key={`${testimonial.id}-${idx}`}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  >
-                    <TestimonialCard testimonial={testimonial} isActive={idx === 0} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {fetchError ? (
+                <div className="col-span-full text-center text-gray-500 py-10">
+                  No testimonials found. They may be pending approval or there was a connection issue.
+                </div>
+              ) : (
+                <AnimatePresence mode="wait">
+                  {visibleTestimonials.map((testimonial, idx) => (
+                    <motion.div
+                      key={`${testimonial.id}-${idx}`}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -50 }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    >
+                      <TestimonialCard testimonial={testimonial} isActive={idx === 0} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              )}
             </div>
           </div>
 
@@ -448,29 +364,15 @@ const Testimonials = () => {
             <Button
               variant="outline"
               className="border-green-500 text-green-600 hover:bg-green-50 group"
-              onClick={openShareDialog}
+              onClick={() => window.open(GOOGLE_REVIEW_URL, "_blank")}
             >
               <MessageSquare className="mr-2 h-4 w-4" />
-              <span>Share Your Experience</span>
+              <span>Share Your Experience on Google</span>
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </div>
         </motion.div>
       </Container>
-
-      {/* Share Experience Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-900">Share Your Experience</DialogTitle>
-            <DialogDescription>
-              We value your feedback! Please share your experience with Globeflight's services.
-            </DialogDescription>
-          </DialogHeader>
-
-          <ShareExperienceForm onClose={closeShareDialog} onSubmit={handleTestimonialSubmit} />
-        </DialogContent>
-      </Dialog>
     </section>
   )
 }

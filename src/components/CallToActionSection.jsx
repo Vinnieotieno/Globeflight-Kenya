@@ -30,29 +30,29 @@ export default function CallToActionSection() {
   }
 
   return (
-    <section className="relative overflow-hidden mt-6 bg-gray-200 py-12 sm:py-18">
-      <div className="container mx-auto px-6 sm:px-6 lg:px-8">
-        <div className="bg-gray-300 rounded-lg shadow-lg p-8 md:p-12">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 items-center">
+    <section className="relative py-12 mt-6 overflow-hidden bg-gray-200 sm:py-18">
+      <div className="container px-6 mx-auto sm:px-6 lg:px-8">
+        <div className="p-8 bg-gray-300 rounded-lg shadow-lg md:p-12">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-8">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="text-center lg:text-left"
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-6">
+              <h2 className="mb-6 text-3xl font-extrabold text-gray-900 sm:text-4xl md:text-5xl">
                 Let us help you find a solution that meets your{' '}
                 <span className="text-green-600">Logistic needs</span>
               </h2>
-              <p className="text-xl text-gray-700 mb-8">
+              <p className="mb-8 text-xl text-gray-700">
                 Take advantage of our extensive experience and let Globeflight find the right solution that fits your pocket as well
               </p>
               <Link
                 to="/contact-us"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 transition duration-150 ease-in-out"
+                className="inline-flex items-center px-6 py-3 text-base font-medium text-white transition duration-150 ease-in-out bg-red-600 border border-transparent rounded-md hover:bg-red-700"
               >
                 Get in Touch with us Today
-                <ChevronRight className="ml-2 -mr-1 h-5 w-5" aria-hidden="true" />
+                <ChevronRight className="w-5 h-5 ml-2 -mr-1" aria-hidden="true" />
               </Link>
             </motion.div>
             <motion.div
@@ -61,7 +61,7 @@ export default function CallToActionSection() {
               transition={{ duration: 0.5 }}
               className="relative"
             >
-              <div className="aspect-w-16 aspect-h-6 rounded-lg overflow-hidden shadow-xl">
+              <div className="overflow-hidden rounded-lg shadow-xl aspect-w-16 aspect-h-6">
                 <img
                   src={ctaImages[currentImageIndex]}
                   alt={`Globeflight services ${currentImageIndex + 1}`}
@@ -71,17 +71,17 @@ export default function CallToActionSection() {
               <div className="absolute inset-0 flex items-center justify-between p-4">
                 <button
                   onClick={prevImage}
-                  className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75 transition duration-150 ease-in-out"
+                  className="p-2 text-white transition duration-150 ease-in-out bg-black bg-opacity-50 rounded-full hover:bg-opacity-75"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft className="h-6 w-6" />
+                  <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="p-2 rounded-full bg-black bg-opacity-50 text-white hover:bg-opacity-75 transition duration-150 ease-in-out"
+                  className="p-2 text-white transition duration-150 ease-in-out bg-black bg-opacity-50 rounded-full hover:bg-opacity-75"
                   aria-label="Next image"
                 >
-                  <ChevronRight className="h-6 w-6" />
+                  <ChevronRight className="w-6 h-6" />
                 </button>
               </div>
             </motion.div>

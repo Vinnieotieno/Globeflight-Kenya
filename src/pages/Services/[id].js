@@ -2,7 +2,6 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import { Card, CardDescription, CardHeader } from "@/components/ui/card"
-import { immigrationServices } from "@/constants/servicepage"
 import Layout from "@/components/Layout"  // Assuming a layout with sidebar and hero section
 
 export default function ServiceDetail({ service, previousService, nextService }) {
@@ -92,26 +91,28 @@ export default function ServiceDetail({ service, previousService, nextService })
 }
 
 export async function getStaticPaths() {
-  const paths = immigrationServices.map(service => ({
-    params: { id: service.id },
-  }))
-  return { paths, fallback: true }
+  // Optionally, fetch all slugs from API for static generation
+  // For fallback: true, you can keep as is or fetch from API
+  return { paths: [], fallback: true }
 }
 
 export async function getStaticProps({ params }) {
-  const service = immigrationServices.find(s => s.id === params.id)
-
-  // Add console log for debugging
-  console.log("Fetching service for ID:", params.id)
-  console.log("Service found:", service)
-
-  if (!service) {
-    return { notFound: true }
+  // Fetch service from backend API
+  try {
+    const res = await fetch(`http://localhost:5000/api/services/public/${params.id}`);
+    const data = await res.json();
+    if (!data.success || !data.data) {
+      return { notFound: true };
+    }
+    // Optionally, fetch all services to get previous/next
+    const allRes = await fetch('http://localhost:5000/api/services/public?limit=100');
+    const allData = await allRes.json();
+    const services = allData.success ? allData.data.services : [];
+    const index = services.findIndex(s => s.id.toString() === params.id || s.slug === params.id);
+    const previousService = index > 0 ? services[index - 1] : null;
+    const nextService = index < services.length - 1 ? services[index + 1] : null;
+    return { props: { service: data.data, previousService, nextService } };
+  } catch (err) {
+    return { notFound: true };
   }
-
-  const index = immigrationServices.indexOf(service)
-  const previousService = immigrationServices[index - 1] || null
-  const nextService = immigrationServices[index + 1] || null
-
-  return { props: { service, previousService, nextService } }
 }
