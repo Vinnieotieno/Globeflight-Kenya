@@ -86,24 +86,24 @@ const TestimonialCard = ({ testimonial, isActive }) => {
         </div>
       </div>
 
-      <p className="text-gray-700 mb-6 flex-grow italic leading-relaxed">"{testimonial.review}"</p>
+      <p className="flex-grow mb-6 italic leading-relaxed text-gray-700">"{testimonial.review}"</p>
 
-      <div className="mt-auto pt-4 border-t border-gray-100">
+      <div className="pt-4 mt-auto border-t border-gray-100">
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white mr-3">
+          <div className="flex items-center justify-center w-10 h-10 mr-3 text-white rounded-full bg-gradient-to-br from-green-400 to-green-600">
             {testimonial.name.charAt(0)}
           </div>
           <div>
             <div className="font-semibold text-gray-900">{testimonial.name}</div>
-            <div className="text-sm text-gray-500 flex items-center">
+            <div className="flex items-center text-sm text-gray-500">
               {testimonial.title ? (
                 <>
-                  <Building className="h-3 w-3 mr-1" />
+                  <Building className="w-3 h-3 mr-1" />
                   {testimonial.title}
                 </>
               ) : (
                 <>
-                  <User className="h-3 w-3 mr-1" />
+                  <User className="w-3 h-3 mr-1" />
                   Client
                 </>
               )}
@@ -115,12 +115,18 @@ const TestimonialCard = ({ testimonial, isActive }) => {
   )
 }
 
-const API_BASE =
-  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_URL)
-    ? import.meta.env.VITE_API_URL
-    : (typeof window !== "undefined" && window.location.hostname === "localhost"
-        ? "http://localhost:5000/api"
-        : "https://globeflight.co.ke/api");
+const API_BASE = (() => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:5000/api';
+    } else {
+      return 'https://globeflight.co.ke/api';
+    }
+  }
+  return 'http://localhost:5000/api'; // fallback
+})();
+
+console.log('API_BASE determined as:', API_BASE);
 
 const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -129,6 +135,7 @@ const Testimonials = () => {
   const [testimonialsList, setTestimonialsList] = useState([]);
   const [fetchError, setFetchError] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
 
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isTablet = useMediaQuery("(min-width: 768px)")
@@ -165,45 +172,65 @@ const Testimonials = () => {
   }, [showSuccessMessage])
 
   useEffect(() => {
-    // Fetch published testimonials from backend
     const fetchTestimonials = async () => {
+      setIsLoading(true);
       try {
         const apiUrl = `${API_BASE}/testimonials/public`;
-        console.log("Fetching testimonials from:", apiUrl); // Debug log
-        const res = await fetch(apiUrl, { credentials: "include" });
+        console.log("API_BASE:", API_BASE);
+        console.log("Fetching testimonials from:", apiUrl);
+        
+        const res = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        console.log("Response status:", res.status);
+        console.log("Response headers:", res.headers);
+
         if (!res.ok) {
-          console.error("API response not ok:", res.status, res.statusText);
-          throw new Error("Failed to fetch testimonials");
+          throw new Error(`HTTP error! status: ${res.status}`);
         }
+
         const data = await res.json();
-        console.log("API testimonials response:", data); // Debug log
+        console.log("Testimonials response:", data);
 
-        // Defensive: handle both array and object response
-        let testimonialsArr = Array.isArray(data.data)
-          ? data.data
-          : (data.data && data.data.testimonials ? data.data.testimonials : []);
+        if (data.success && data.data) {
+          // Handle both array and object response formats
+          const testimonials = Array.isArray(data.data) 
+            ? data.data 
+            : data.data.testimonials || [];
 
-        if (data.success && Array.isArray(testimonialsArr) && testimonialsArr.length > 0) {
-          setTestimonialsList(
-            testimonialsArr.map((t) => ({
+          console.log("Processed testimonials:", testimonials);
+
+          if (testimonials.length > 0) {
+            setTestimonialsList(testimonials.map(t => ({
               id: t.id,
               name: t.name,
               title: t.position || t.company || "",
               review: t.content,
-              rating: t.rating,
-            }))
-          );
-          setFetchError(false);
+              rating: t.rating || 5,
+            })));
+            setFetchError(false);
+          } else {
+            setTestimonialsList([]);
+            setFetchError(true);
+          }
         } else {
-          setTestimonialsList([]);
-          setFetchError(true);
+          throw new Error('Invalid response format');
         }
-      } catch (e) {
-        setTestimonialsList([]);
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
         setFetchError(true);
-        console.error("Error fetching testimonials:", e);
+        setTestimonialsList([]);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchTestimonials();
   }, []);
 
@@ -233,22 +260,22 @@ const Testimonials = () => {
   }
 
   return (
-    <section className="relative overflow-hidden py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="relative py-20 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
       {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-green-50 rounded-bl-full opacity-30"></div>
-      <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-green-50 rounded-tr-full opacity-30"></div>
+      <div className="absolute top-0 right-0 w-1/3 rounded-bl-full h-1/3 bg-green-50 opacity-30"></div>
+      <div className="absolute bottom-0 left-0 w-1/4 rounded-tr-full h-1/4 bg-green-50 opacity-30"></div>
 
       <Container>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mx-auto text-center mb-12"
+          className="mx-auto mb-12 text-center"
         >
           <span className="inline-block px-4 py-1.5 text-sm font-semibold text-green-600 bg-green-50 rounded-full mb-3">
             Testimonials
           </span>
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">What Our Clients Say</h2>
+          <h2 className="mb-4 text-4xl font-bold tracking-tight text-gray-900">What Our Clients Say</h2>
           <p className="max-w-2xl mx-auto text-lg text-gray-600">
             Our clients trust us with their logistics needs and have shared their experiences working with Globeflight
           </p>
@@ -261,10 +288,10 @@ const Testimonials = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-8 flex items-center justify-between"
+              className="flex items-center justify-between px-4 py-3 mb-8 text-green-700 bg-green-100 border border-green-200 rounded-lg"
             >
               <div className="flex items-center">
-                <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -274,19 +301,26 @@ const Testimonials = () => {
                 <span>Thank you for sharing your experience! Your testimonial has been added.</span>
               </div>
               <button onClick={() => setShowSuccessMessage(false)} className="text-green-700 hover:text-green-900">
-                <X className="h-4 w-4" />
+                <X className="w-4 h-4" />
               </button>
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="relative" ref={containerRef}>
-          {/* Custom carousel implementation */}
           <div className="overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {fetchError ? (
-                <div className="col-span-full text-center text-gray-500 py-10">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {isLoading ? (
+                <div className="py-10 text-center text-gray-500 col-span-full">
+                  Loading testimonials...
+                </div>
+              ) : fetchError ? (
+                <div className="py-10 text-center text-gray-500 col-span-full">
                   No testimonials found. They may be pending approval or there was a connection issue.
+                </div>
+              ) : testimonialsList.length === 0 ? (
+                <div className="py-10 text-center text-gray-500 col-span-full">
+                  No testimonials available at the moment.
                 </div>
               ) : (
                 <AnimatePresence mode="wait">
@@ -306,15 +340,15 @@ const Testimonials = () => {
             </div>
           </div>
 
-          <div className="flex justify-center mt-10 space-x-4 items-center">
+          <div className="flex items-center justify-center mt-10 space-x-4">
             <Button
               variant="outline"
               size="icon"
               onClick={handlePrev}
-              className="rounded-full w-10 h-10 bg-white hover:bg-gray-50 border border-gray-200"
+              className="w-10 h-10 bg-white border border-gray-200 rounded-full hover:bg-gray-50"
               aria-label="Previous testimonial"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="w-5 h-5" />
             </Button>
 
             <Button
@@ -328,17 +362,17 @@ const Testimonials = () => {
               }`}
               aria-label={isAutoPlay ? "Pause autoplay" : "Start autoplay"}
             >
-              {isAutoPlay ? <PauseCircle className="h-5 w-5" /> : <PlayCircle className="h-5 w-5" />}
+              {isAutoPlay ? <PauseCircle className="w-5 h-5" /> : <PlayCircle className="w-5 h-5" />}
             </Button>
 
             <Button
               variant="outline"
               size="icon"
               onClick={handleNext}
-              className="rounded-full w-10 h-10 bg-white hover:bg-gray-50 border border-gray-200"
+              className="w-10 h-10 bg-white border border-gray-200 rounded-full hover:bg-gray-50"
               aria-label="Next testimonial"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -349,7 +383,7 @@ const Testimonials = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="mt-12 text-center"
         >
-          <div className="inline-flex items-center justify-center space-x-2 mb-8">
+          <div className="inline-flex items-center justify-center mb-8 space-x-2">
             {testimonialsList.slice(0, testimonialsList.length - visibleCount + 1).map((_, idx) => (
               <span
                 key={idx}
@@ -363,12 +397,12 @@ const Testimonials = () => {
           <div className="mt-10">
             <Button
               variant="outline"
-              className="border-green-500 text-green-600 hover:bg-green-50 group"
+              className="text-green-600 border-green-500 hover:bg-green-50 group"
               onClick={() => window.open(GOOGLE_REVIEW_URL, "_blank")}
             >
-              <MessageSquare className="mr-2 h-4 w-4" />
+              <MessageSquare className="w-4 h-4 mr-2" />
               <span>Share Your Experience on Google</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Button>
           </div>
         </motion.div>

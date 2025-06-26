@@ -14,7 +14,7 @@ import ScrollOnSideSection from "@/components/ScrollOnSideSection"
 import Hero from "@/pages/Services/sections/Hero"
 import { ChevronLeft, ChevronRight, Calendar, Share2, Facebook, Twitter, Linkedin, MapPin, Clock, Phone, Mail } from 'lucide-react'
 
-const API_URL = "http://localhost:5000/api/services/public";
+const API_URL = "http://globeflight.co.ke/api/services/public";
 
 export default function ServiceDetail() {
   const { slug } = useParams(); // <-- use slug, not id
@@ -33,12 +33,12 @@ export default function ServiceDetail() {
       setError("")
       try {
         // Fetch by slug (or id fallback)
-        let res = await fetch(`http://localhost:5000/api/services/public/${slug}`);
+        let res = await fetch(`http://globeflight.co.ke/api/services/public/${slug}`);
         let data = await res.json();
         if (data.success && data.data) {
           setService(data.data);
           // Fetch all services for related
-          const allRes = await fetch('http://localhost:5000/api/services/public?limit=100');
+          const allRes = await fetch('http://globeflight.co.ke/api/services/public?limit=100');
           const allData = await allRes.json();
           setAllServices(allData.success ? allData.data.services : []);
         } else {
@@ -156,7 +156,7 @@ export default function ServiceDetail() {
                 {service.imageUrl && (
                   <img 
                     src={service.imageUrl.startsWith('/uploads/')
-                      ? `http://localhost:5000${service.imageUrl}`
+                      ? `http://globeflight.co.ke${service.imageUrl}`
                       : service.imageUrl}
                     alt={service.title}
                     className="w-full h-64 object-cover rounded-lg shadow-lg mb-6"
@@ -226,7 +226,7 @@ export default function ServiceDetail() {
                       <img
                         key={i}
                         src={imgUrl.startsWith('/uploads/')
-                          ? `http://localhost:5000${imgUrl}`
+                          ? `http://globeflight.co.ke${imgUrl}`
                           : imgUrl}
                         alt={`${service.title} Image ${i + 1}`}
                         className="w-full h-48 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
@@ -265,7 +265,7 @@ export default function ServiceDetail() {
                         {related.imageUrl && (
                           <img
                             src={related.imageUrl.startsWith('/uploads/')
-                              ? `http://localhost:5000${related.imageUrl}`
+                              ? `http://globeflight.co.ke${related.imageUrl}`
                               : related.imageUrl}
                             alt={related.title}
                             className="w-full h-32 object-cover rounded-t-lg"

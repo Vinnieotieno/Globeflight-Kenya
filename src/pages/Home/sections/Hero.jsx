@@ -1,66 +1,57 @@
-"use client"
-
 import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Link } from "react-router-dom"
-import { Volume2, VolumeX, ChevronDown, Truck, Package, Warehouse, Globe, ArrowRight } from "lucide-react"
-import aeroplane from "@/assets/aeroplane.png"
-import video from "@/assets/herovid.mp4"
-
-// SEO-friendly metadata component
-const HeroMetadata = () => (
-  <>
-    <h1 className="sr-only">
-      Globeflight Kenya - Your Trusted Logistics, Warehousing & Fulfillment Partner in East Africa
-    </h1>
-    <meta
-      name="description"
-      content="Globeflight Kenya offers 24/7/365 logistics, warehousing and fulfillment services across East Africa. Reliable, efficient and professional cargo solutions."
-    />
-  </>
-)
-
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
+import { Volume2, VolumeX, ChevronDown, Truck, Package, Warehouse, Globe, ArrowRight, Plane, Ship, Clock } from "lucide-react"
+import { Link, useLocation } from "react-router-dom";
 const Hero = () => {
   const [isMuted, setIsMuted] = useState(true)
-  const [showValues, setShowValues] = useState(false)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [activeService, setActiveService] = useState(0)
+  const [currentTime, setCurrentTime] = useState(new Date())
   const videoRef = useRef(null)
-  const servicesRef = useRef(null)
+  const containerRef = useRef(null)
+  
+  const { scrollY } = useScroll()
+  const y = useTransform(scrollY, [0, 500], [0, 150])
+  const opacity = useTransform(scrollY, [0, 300], [1, 0])
 
   const services = [
     {
       title: "Air Freight",
-      description: "Fast and reliable air freight services across East Africa and beyond",
-      icon: <Globe className="h-6 w-6" />,
+      description: "Lightning-fast air cargo solutions across continents",
+      icon: <Plane className="w-6 h-6" />,
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      title: "Road Transport",
-      description: "Efficient road transportation solutions for your logistics needs",
-      icon: <Truck className="h-6 w-6" />,
+      title: "Sea Freight",
+      description: "Cost-effective ocean transportation worldwide",
+      icon: <Ship className="w-6 h-6" />,
+      color: "from-teal-500 to-blue-500",
     },
     {
       title: "Warehousing",
-      description: "Secure storage and warehousing facilities for your goods",
-      icon: <Warehouse className="h-6 w-6" />,
+      description: "State-of-the-art storage facilities",
+      icon: <Warehouse className="w-6 h-6" />,
+      color: "from-purple-500 to-pink-500",
     },
     {
-      title: "Fulfillment",
-      description: "Complete order fulfillment and distribution services",
-      icon: <Package className="h-6 w-6" />,
+      title: "E-commerce",
+      description: "Seamless fulfillment for online businesses",
+      icon: <Package className="w-6 h-6" />,
+      color: "from-orange-500 to-red-500",
     },
   ]
 
   useEffect(() => {
-    // Rotate through services automatically
     const interval = setInterval(() => {
       setActiveService((prev) => (prev + 1) % services.length)
     }, 3000)
-
     return () => clearInterval(interval)
-  }, [services.length])
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -69,208 +60,235 @@ const Hero = () => {
     }
   }
 
-  const scrollToServices = () => {
-    const servicesSection = document.getElementById("services")
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
-  const handleVideoLoad = () => {
-    setIsVideoLoaded(true)
-  }
-
   return (
-    <section className="relative w-full min-h-screen overflow-hidden" aria-label="Hero section">
-      <HeroMetadata />
+    <section ref={containerRef} className="relative w-full min-h-screen mt-16 overflow-hidden bg-black">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/30 via-transparent to-blue-900/30" />
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)`,
+          }}
+          animate={{
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
+      </div>
 
-      {/* Video Background Section with Preload Placeholder */}
-      <div className="absolute inset-0 bg-gradient-to-r from-green-900 to-blue-900">
-        {/* Video placeholder before video loads */}
+      {/* Video Background */}
+      <motion.div style={{ y }} className="absolute inset-0">
         {!isVideoLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-green-900 to-blue-900">
+            <motion.div
+              className="w-20 h-20 border-4 border-green-500 rounded-full border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
           </div>
         )}
-
+        
         <video
           ref={videoRef}
           autoPlay
           loop
           muted={isMuted}
           playsInline
-          onLoadedData={handleVideoLoad}
+          onLoadedData={() => setIsVideoLoaded(true)}
           className={`w-full h-full object-cover transition-opacity duration-1000 ${
-            isVideoLoaded ? "opacity-100" : "opacity-0"
+            isVideoLoaded ? "opacity-40" : "opacity-0"
           }`}
-          aria-hidden="true"
         >
-          <source src={video} type="video/mp4" />
-          Your browser does not support the video tag.
+          <source src="/video1.mp4" type="video/mp4" />
         </video>
 
-        {/* Gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
+      </motion.div>
+
+      {/* Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-64 h-64 rounded-full bg-gradient-to-br from-green-500/10 to-blue-500/10 blur-3xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              x: [0, 100, -100, 0],
+              y: [0, -100, 100, 0],
+            }}
+            transition={{
+              duration: 20 + i * 5,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        ))}
       </div>
 
-      {/* Content Section */}
-      <div className="relative z-10 mt-12 flex flex-col items-center justify-center min-h-screen px-4 py-20">
+      {/* Main Content */}
+      <motion.div style={{ opacity }} className="relative z-10 mt-12 flex flex-col items-center justify-center min-h-screen px-4 py-20">
+        {/* Live Clock */}
         <motion.div
-          initial={{ opacity: 0, y: -30 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-2 text-green-400 font-semibold tracking-wider text-center"
+          className="absolute px-4 py-2 border rounded-full top-20 right-4 md:right-8 bg-white/10 backdrop-blur-md border-white/20"
         >
-          WELCOME TO GLOBEFLIGHT KENYA
+          <div className="flex items-center space-x-2">
+            <Clock className="w-4 h-4 text-green-400" />
+            <span className="font-mono text-sm text-white">
+              {currentTime.toLocaleTimeString()}
+            </span>
+          </div>
         </motion.div>
 
-        <motion.h2
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="text-white text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wider text-center mb-4 leading-tight"
-        >
-          <span className="text-green-400">LOGISTICS</span> 24.SEVEN.365
-        </motion.h2>
-
+        {/* Hero Text */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="w-20 h-1 bg-green-400 mb-8"
-        ></motion.div>
+          transition={{ duration: 1 }}
+          className="max-w-5xl mx-auto space-y-6 text-center"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center px-6 py-2 mt-12 space-x-2 border rounded-full bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-sm border-white/10"
+          >
+            <Globe className="w-4 h-4 text-green-400" />
+            <span className="text-sm font-medium tracking-wider text-green-400">GLOBEFLIGHT KENYA</span>
+          </motion.div>
 
-        <motion.h3
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-5xl font-bold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400">
+              LOGISTICS
+            </span>
+            <br />
+            <span className="text-white">24.SEVEN.365</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="max-w-3xl mx-auto text-xl text-gray-300 md:text-2xl"
+          >
+            Revolutionizing supply chain excellence across East Africa and beyond
+          </motion.p>
+        </motion.div>
+
+        {/* Service Carousel */}
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-white text-xl sm:text-2xl md:text-3xl font-medium text-center mb-6 max-w-3xl leading-relaxed"
+          transition={{ delay: 0.5 }}
+          className="w-full max-w-4xl mx-auto mt-16"
         >
-          Your Trusted & Credible Logistics, Warehousing & Fulfillment Partner
-        </motion.h3>
-
-        {/* Rotating Services Showcase */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mb-10 h-24 relative w-full max-w-lg"
-          ref={servicesRef}
-        >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeService}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="absolute inset-0 flex flex-col items-center justify-center text-center"
-            >
-              <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full mb-3">{services[activeService].icon}</div>
-              <h4 className="text-green-400 font-semibold mb-1">{services[activeService].title}</h4>
-              <p className="text-white/80 text-sm max-w-md">{services[activeService].description}</p>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6"
-        >
-          {/*<Button
-            size="lg"
-            variant="outline"
-            onClick={scrollToServices}
-            className="w-full sm:w-auto text-lg border-white text-white hover:bg-white hover:text-green-700 transition-all duration-300"
-          >
-            Explore Services
-          </Button>
-          <Button
-            size="lg"
-            variant="default"
-            asChild
-            className="w-full sm:w-auto text-lg bg-green-500 hover:bg-green-600 transition-all duration-300"
-          >
-            <Link to="/contact">
-              Contact Us <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>*/}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowValues(!showValues)}
-            className="text-white hover:text-green-400 transition-colors animate-bounce"
-            aria-label={showValues ? "Hide our values" : "Show our values"}
-          >
-            <ChevronDown className="h-8 w-8" />
-          </Button>
-          <span className="text-white text-sm mt-2">Our Values</span>
-        </motion.div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleMute}
-          className="absolute top-4 right-4 text-white hover:text-green-400 transition-colors bg-black/30 backdrop-blur-sm rounded-full"
-          aria-label={isMuted ? "Unmute video" : "Mute video"}
-        >
-          {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
-        </Button>
-      </div>
-
-      {/* Values Card Section */}
-      <AnimatePresence>
-        {showValues && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            transition={{ type: "spring", stiffness: 100 }}
-            className="absolute bottom-0 left-0 right-0 z-20"
-          >
-            <Card className="bg-gradient-to-r from-green-600 to-green-500 text-white shadow-xl p-6 mx-auto w-[90%] sm:w-[85%] md:w-[75%] lg:w-[60%] xl:w-[55%] border-t-4 border-white">
-              <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-                <div className="flex items-center space-x-4">
-                  <div className="bg-white text-green-600 font-bold px-4 py-2 rounded-md">OUR VALUES</div>
-                  <motion.img
-                    src={aeroplane}
-                    alt="Aeroplane"
-                    className="w-12 h-12 object-contain"
-                    animate={{ x: [0, 10, 0] }}
-                    transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-                  />
-                </div>
-                <div className="text-center sm:text-left">
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold mb-2">Our Commitment to Excellence</p>
-                  <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                    {["Reliability", "Integrity", "Efficiency", "Innovation", "Professionalism"].map((value, index) => (
-                      <motion.span
-                        key={value}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: index * 0.1 + 0.2 }}
-                        className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium"
-                      >
-                        {value}
-                      </motion.span>
-                    ))}
+          <div className="relative h-32">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeService}
+                initial={{ opacity: 0, x: 100, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -100, scale: 0.8 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute inset-0"
+              >
+                <div className="p-8 transition-all border bg-white/5 backdrop-blur-xl rounded-2xl border-white/10 hover:border-white/20">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className={`p-4 rounded-xl bg-gradient-to-br ${services[activeService].color} shadow-lg`}>
+                        {services[activeService].icon}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white">{services[activeService].title}</h3>
+                        <p className="mt-1 text-gray-400">{services[activeService].description}</p>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-6 h-6 text-white/50" />
                   </div>
                 </div>
-              </div>
-            </Card>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Service Indicators */}
+          <div className="flex justify-center mt-6 space-x-2">
+            {services.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveService(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === activeService ? "w-8 bg-green-400" : "w-2 bg-white/30"
+                }`}
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex flex-col gap-4 mt-12 sm:flex-row"
+        >
+          <button className="relative px-8 py-4 overflow-hidden font-semibold text-white transition-all group bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl hover:scale-105">
+            <Link to="/contact-us">
+            <span className="relative z-10 flex items-center">
+              Get Started
+              <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+            </span>
+            </Link>
+            <div className="absolute inset-0 transition-opacity opacity-0 bg-gradient-to-r from-green-600 to-emerald-600 group-hover:opacity-100" />
+          </button>
+          
+          <button className="px-8 py-4 font-semibold text-white transition-all border-2 border-white/20 rounded-xl backdrop-blur-sm hover:bg-white/10 hover:scale-105">
+            <Link to="/services">
+            Explore Services
+            </Link>
+          </button>
+          
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute transform -translate-x-1/2 bottom-8 left-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex flex-col items-center cursor-pointer group"
+          >
+            <span className="mb-2 text-sm transition-colors text-white/60 group-hover:text-white">Scroll to explore</span>
+            <ChevronDown className="w-6 h-6 transition-colors text-white/60 group-hover:text-white" />
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+
+        {/* Mute Button */}
+        <button
+          onClick={toggleMute}
+          className="absolute p-3 transition-all border rounded-full top-20 left-4 md:left-8 bg-white/10 backdrop-blur-md border-white/20 hover:bg-white/20"
+        >
+          {isMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+        </button>
+      </motion.div>
     </section>
   )
 }

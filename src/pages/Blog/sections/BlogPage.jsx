@@ -1,19 +1,29 @@
 'use client'
 
 import React, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon, SearchIcon, UserIcon, TagIcon, EyeIcon, ThumbsUp, MessageCircle, ClockIcon } from "lucide-react"
-import Hero from "@/pages/Blog/sections/Hero";
-import CallToActionSection from "@/components/CallToActionSection"
-import ScrollOnSideSection from "@/components/ScrollOnSideSection"
+import { Calendar, ChevronLeft, ChevronRight, Search, User as UserIcon, Tag as TagIcon, Eye as EyeIcon, ThumbsUp, MessageCircle, Clock as ClockIcon, TrendingUp, Sparkles, ArrowRight, Search as SearchIcon } from "lucide-react"
 
-// Use your backend API
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+// API Configuration
+const API_BASE = (() => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:5000/api';
+    } else {
+      return 'https://globeflight.co.ke/api';
+    }
+  }
+  return 'http://localhost:5000/api';
+})();
+
+// Simulated Link component for demo
+const Link = ({ to, children, className }) => (
+  <a href={to} className={className}>{children}</a>
+)
 
 export default function BlogGrid() {
   const [posts, setPosts] = useState([])
@@ -25,43 +35,100 @@ export default function BlogGrid() {
   const [totalPages, setTotalPages] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const postsPerPage = 6
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [subscribeEmail, setSubscribeEmail] = useState("")
-  const [subscribeMsg, setSubscribeMsg] = useState("")
-  const [recentPosts, setRecentPosts] = useState([]);
-  const [relatedPosts, setRelatedPosts] = useState([]); // <-- Add this line
+  const [subscribeLoading, setSubscribeLoading] = useState(false)
+  const [subscribeError, setSubscribeError] = useState("")
+  const [recentPosts, setRecentPosts] = useState([])
+  const [relatedPosts, setRelatedPosts] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
+      setError(null)
       try {
-        // Fetch blogs from backend
-        const blogsRes = await axios.get(`${API_URL}/blogs/public`, {
+        const blogsRes = await axios.get(`${API_BASE}/blogs/public`, {
           params: {
             page: currentPage,
             limit: postsPerPage,
-            search: searchTerm
+            search: searchTerm || undefined
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
           }
         })
-        setPosts(blogsRes.data.data.blogs)
-        setTotalPages(blogsRes.data.data.pagination.pages)
-        // Featured post (first featured, else most recent)
-        const featured = blogsRes.data.data.blogs.find(b => b.isFeatured) || blogsRes.data.data.blogs[0]
-        setFeaturedPost(featured)
-        // Fetch categories
-        const catRes = await axios.get(`${API_URL}/categories`)
-        setCategories(catRes.data.data)
-        // Fetch recent posts (first 5 published)
-        const recentRes = await axios.get(`${API_URL}/blogs/public`, {
-          params: { page: 1, limit: 5 }
-        });
-        setRecentPosts(recentRes.data.data.blogs || []);
-        // Fetch related posts (for demo, just get 3 more blogs)
-        const relatedRes = await axios.get(`${API_URL}/blogs/public`, {
-          params: { page: 1, limit: 3 }
-        });
-        setRelatedPosts(relatedRes.data.data.blogs || []);
+        
+        if (blogsRes.data.success && blogsRes.data.data) {
+          setPosts(blogsRes.data.data.blogs || [])
+          setTotalPages(blogsRes.data.data.pagination?.pages || 1)
+          const featured = blogsRes.data.data.blogs?.find(b => b.isFeatured) || blogsRes.data.data.blogs?.[0]
+          setFeaturedPost(featured)
+        } else {
+          setPosts([])
+          setTotalPages(1)
+          setFeaturedPost(null)
+        }
+        
+        try {
+          const catRes = await axios.get(`${API_BASE}/categories`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            }
+          })
+          if (catRes.data.success && catRes.data.data) {
+            setCategories(catRes.data.data)
+          } else {
+            setCategories([])
+          }
+        } catch (catErr) {
+          console.error('Error fetching categories:', catErr)
+          setCategories([])
+        }
+        
+        try {
+          const recentRes = await axios.get(`${API_BASE}/blogs/public`, {
+            params: { page: 1, limit: 5 },
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            }
+          });
+          if (recentRes.data.success && recentRes.data.data) {
+            setRecentPosts(recentRes.data.data.blogs || []);
+          } else {
+            setRecentPosts([]);
+          }
+        } catch (recentErr) {
+          console.error('Error fetching recent posts:', recentErr)
+          setRecentPosts([]);
+        }
+        
+        try {
+          const relatedRes = await axios.get(`${API_BASE}/blogs/public`, {
+            params: { page: 1, limit: 3 },
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            }
+          });
+          if (relatedRes.data.success && relatedRes.data.data) {
+            setRelatedPosts(relatedRes.data.data.blogs || []);
+          } else {
+            setRelatedPosts([]);
+          }
+        } catch (relatedErr) {
+          console.error('Error fetching related posts:', relatedErr)
+          setRelatedPosts([]);
+        }
       } catch (err) {
-        setError("Failed to load blog content")
+        console.error('Error fetching blog data:', err)
+        setError("Failed to load blog content. Please try again later.")
+        setPosts([])
+        setCategories([])
+        setRecentPosts([])
+        setRelatedPosts([])
       } finally {
         setLoading(false)
       }
@@ -74,319 +141,469 @@ export default function BlogGrid() {
     setCurrentPage(1)
   }
 
-  // Subscribe to newsletter
   const handleSubscribe = async (e) => {
-    e.preventDefault()
-    setSubscribeMsg("")
-    try {
-      await axios.post(`${API_URL}/blogs/newsletter/subscribe`, { email: subscribeEmail })
-      setSubscribeMsg("Subscribed successfully!")
-      setSubscribeEmail("")
-    } catch (err) {
-      setSubscribeMsg(err.response?.data?.message || "Subscription failed")
+    e.preventDefault();
+    if (!subscribeEmail || !subscribeEmail.includes('@')) {
+      setSubscribeError('Please enter a valid email address');
+      return;
     }
-  }
+
+    setSubscribeLoading(true);
+    setSubscribeError('');
+    
+    try {
+      const res = await axios.post(`${API_BASE}/blogs/newsletter/subscribe`, {
+        email: subscribeEmail
+      });
+      
+      if (res.data.success) {
+        setShowSuccessMessage(true);
+        setSubscribeEmail('');
+        setTimeout(() => setShowSuccessMessage(false), 5000);
+      }
+    } catch (err) {
+      setSubscribeError(err.response?.data?.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setSubscribeLoading(false);
+    }
+  };
 
   const truncateText = (text, maxLength) => {
+    if (!text) return ""
     const strippedText = text.replace(/<\/?[^>]+(>|$)/g, "")
     return strippedText.length > maxLength ? strippedText.slice(0, maxLength) + "..." : strippedText
   }
 
   if (loading) {
     return (
-      <div className="container px-4 py-8 mx-auto">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <Skeleton className="w-full h-48" />
-              <CardContent className="p-4">
-                <Skeleton className="w-3/4 h-4 mb-2" />
-                <Skeleton className="w-full h-4" />
-                <Skeleton className="w-full h-4" />
-              </CardContent>
-            </Card>
-          ))}
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="container px-4 py-16 mx-auto">
+          <div className="grid gap-8 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="group">
+                <Skeleton className="w-full h-64 rounded-2xl mb-4" />
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
   }
 
   if (error) {
-    return <div className="py-8 text-center text-red-500">{error}</div>
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="text-red-500 mb-4 text-lg">{error}</div>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg transform hover:scale-105 transition-all duration-200"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      {/* Hero section with featured/recent blog */}
-      <Hero>
-        {featuredPost && (
-          <div className="flex flex-col items-center py-12 text-center">
-            {featuredPost.featuredImage && (
-              <img
-                src={
-                  featuredPost.featuredImage.startsWith("http")
-                    ? featuredPost.featuredImage
-                    : `${API_URL.replace("/api", "")}/${featuredPost.featuredImage.replace(/^\/+/, "")}`
-                }
-                alt={featuredPost.title}
-                className="object-cover w-full h-64 max-w-2xl mb-6 rounded-lg shadow-md"
-              />
-            )}
-            <h2 className="mb-2 text-3xl font-bold">{featuredPost.title}</h2>
-            <p className="mb-4 text-gray-700">{featuredPost.shortDescription}</p>
-            <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm text-gray-600">
-              <span className="flex items-center"><UserIcon className="w-4 h-4 mr-1" />{featuredPost.author?.fullName}</span>
-              <span className="flex items-center"><CalendarIcon className="w-4 h-4 mr-1" />{featuredPost.publishedAt && new Date(featuredPost.publishedAt).toLocaleDateString()}</span>
-              <span className="flex items-center"><EyeIcon className="w-4 h-4 mr-1" />{featuredPost.viewsCount}</span>
-              <span className="flex items-center"><ThumbsUp className="w-4 h-4 mr-1" />{featuredPost.likesCount}</span>
-              <span className="flex items-center"><MessageCircle className="w-4 h-4 mr-1" />{featuredPost.commentCount || 0}</span>
-              <span className="flex items-center"><ClockIcon className="w-4 h-4 mr-1" />{featuredPost.readTime} min read</span>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      {/* Featured Post Section */}
+      {featuredPost && (
+        <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50 py-20">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-100/20 to-blue-100/20 opacity-50"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex items-center justify-center mb-8">
+              <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100/80 backdrop-blur-sm rounded-full text-green-800 text-sm font-semibold">
+                <Sparkles className="w-4 h-4" />
+                Featured Story
+              </span>
             </div>
-            <Link to={`/blog/${featuredPost.slug}`}>
-              <Button variant="default" className="bg-green-600 hover:bg-green-700">Read More</Button>
-            </Link>
+            
+            <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+              <div className="order-2 lg:order-1 space-y-6">
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <span className="flex items-center gap-1 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                    <UserIcon className="w-4 h-4" />
+                    {featuredPost.author?.fullName || 'Anonymous'}
+                  </span>
+                  <span className="flex items-center gap-1 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                    <Calendar className="w-4 h-4" />
+                    {featuredPost.publishedAt && new Date(featuredPost.publishedAt).toLocaleDateString()}
+                  </span>
+                  <span className="flex items-center gap-1 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                    <ClockIcon className="w-4 h-4" />
+                    {featuredPost.readTime || 5} min
+                  </span>
+                </div>
+                
+                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                  {featuredPost.title}
+                </h2>
+                
+                <p className="text-lg text-gray-600 leading-relaxed">
+                  {featuredPost.shortDescription}
+                </p>
+                
+                <div className="flex items-center gap-6">
+                  <Link to={`/blog/${featuredPost.slug}`}>
+                    <Button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg transform hover:scale-105 transition-all duration-200 px-8 py-3 text-lg rounded-full">
+                      Read Full Article
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                  
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <EyeIcon className="w-4 h-4" />
+                      {featuredPost.viewsCount || 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <ThumbsUp className="w-4 h-4" />
+                      {featuredPost.likesCount || 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="w-4 h-4" />
+                      {featuredPost.commentCount || 0}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="order-1 lg:order-2">
+                {featuredPost.featuredImage && (
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-3xl transform rotate-3 group-hover:rotate-6 transition-transform duration-300 opacity-20"></div>
+                    <img
+                      src={
+                        featuredPost.featuredImage.startsWith("http")
+                          ? featuredPost.featuredImage
+                          : `${API_BASE.replace("/api", "")}/${featuredPost.featuredImage.replace(/^\/+/, "")}`
+                      }
+                      alt={featuredPost.title}
+                      className="relative w-full h-[400px] object-cover rounded-3xl shadow-2xl transform group-hover:scale-[1.02] transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <span className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-semibold text-green-800 shadow-lg">
+                        {featuredPost.category?.name || 'Uncategorized'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        )}
-      </Hero>
-      <div className="container px-4 py-12 mx-auto">
-        <h1 className="mb-12 text-4xl font-bold text-center text-green-800">Latest News & Insights</h1>
+        </section>
+      )}
 
-        <form onSubmit={handleSearch} className="mb-12">
-          <div className="flex max-w-md gap-2 mx-auto">
+      <div className="container px-4 py-16 mx-auto">
+        {/* Search Section */}
+        <div className="max-w-2xl mx-auto mb-16">
+          <div className="relative">
             <Input
               type="search"
-              placeholder="Search posts..."
+              placeholder="Search articles, topics, authors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-grow shadow-sm"
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
+              className="w-full pl-6 pr-32 py-6 text-lg rounded-full border-2 border-gray-200 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200"
             />
-            <Button type="submit" variant="default" className="bg-green-600 hover:bg-green-700">
+            <Button 
+              onClick={handleSearch}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full px-6 py-2 shadow-lg"
+            >
               <SearchIcon className="w-4 h-4 mr-2" />
               Search
             </Button>
           </div>
-        </form>
+        </div>
 
-        <div className="grid gap-8 lg:grid-cols-4">
+        <div className="grid gap-12 lg:grid-cols-4">
+          {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {posts.map((post) => (
-                <Card key={post.id} className="flex flex-col overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-lg">
-                  <div className="relative w-full h-48 sm:h-40 md:h-48">
-                    {post.featuredImage && (
-                      <img
-                        src={
-                          post.featuredImage.startsWith("http")
-                            ? post.featuredImage
-                            : `${API_URL.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
-                        }
-                        alt={post.title}
-                        className="object-cover w-full h-full"
-                      />
-                    )}
-                    <div className="absolute top-0 right-0 px-2 py-1 text-xs font-semibold text-white bg-green-500">
-                      {post.category?.name || 'Uncategorized'}
-                    </div>
-                  </div>
-                  <CardContent className="flex-grow p-4">
-                    <div className="flex flex-wrap items-center gap-4 mb-2 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <CalendarIcon className="flex-shrink-0 w-4 h-4" />
-                        <span className="truncate">
-                          {post.publishedAt
-                            ? new Date(post.publishedAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })
-                            : ""}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <UserIcon className="flex-shrink-0 w-4 h-4" />
-                        <span className="truncate">{post.author?.fullName}</span>
-                      </div>
-                    </div>
-                    <h2
-                      className="mb-2 text-xl font-semibold text-green-800 line-clamp-2"
-                    >
-                      {post.title}
-                    </h2>
-                    <div
-                      className="mb-4 text-gray-600 line-clamp-3"
-                    >
-                      {truncateText(post.shortDescription || "", 100)}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/blog/${post.slug}`} className="w-full">
-                      <Button variant="default" className="w-full bg-green-600 hover:bg-green-700">
-                        Read More
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">Latest Articles</h2>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <TrendingUp className="w-4 h-4 text-green-600" />
+                <span>Trending Now</span>
+              </div>
             </div>
 
-            <div className="flex items-center justify-center gap-2 mt-12">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="text-green-700 border-green-300 hover:bg-green-50"
-              >
-                <ChevronLeftIcon className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
-              {[...Array(totalPages)].map((_, i) => (
-                <Button
-                  key={i}
-                  variant={currentPage === i + 1 ? "default" : "outline"}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={currentPage === i + 1 ? "bg-green-600 hover:bg-green-700" : "text-green-700 border-green-300 hover:bg-green-50"}
-                >
-                  {i + 1}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="text-green-700 border-green-300 hover:bg-green-50"
-              >
-                Next
-                <ChevronRightIcon className="w-4 h-4 ml-2" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-8 lg:col-span-1">
-            <Card className="overflow-hidden shadow-lg">
-              <CardHeader className="text-white bg-green-600">
-                <h3 className="text-xl font-semibold">Recent Posts</h3>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-4 divide-y divide-gray-200">
-                  {recentPosts.map((post) => (
-                    <li key={post.id} className="pt-4 first:pt-0">
-                      <Link to={`/blog/${post.slug}`} className="block transition-colors hover:text-green-600">
-                        <h4 className="font-medium line-clamp-2">{post.title}</h4>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {post.publishedAt
-                            ? new Date(post.publishedAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })
-                            : ""}
-                        </p>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden shadow-lg">
-              <CardHeader className="text-white bg-green-600">
-                <h3 className="text-xl font-semibold">Categories</h3>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2">
-                  {categories.map((category) => (
-                    <li key={category.id} className="flex items-center">
-                      <TagIcon className="w-4 h-4 mr-2 text-green-500" />
-                      <Link to={`/category/${category.slug}`} className="transition-colors hover:text-green-600">
-                        {category.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Newsletter subscribe section */}
-        <div className="max-w-lg p-6 mx-auto my-12 text-center bg-white rounded-lg shadow">
-          <h3 className="mb-2 text-xl font-bold">Subscribe to Our Blog</h3>
-          <p className="mb-4 text-gray-600">Get the latest posts delivered to your inbox.</p>
-          <form onSubmit={handleSubscribe} className="flex gap-2">
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={subscribeEmail}
-              onChange={e => setSubscribeEmail(e.target.value)}
-              required
-            />
-            <Button type="submit" variant="default" className="bg-green-600 hover:bg-green-700">Subscribe</Button>
-          </form>
-          {subscribeMsg && <div className="mt-2 text-green-600">{subscribeMsg}</div>}
-        </div>
-
-        <div className="mt-16">
-          <h2 className="mb-8 text-3xl font-bold text-center text-green-800">Related Posts</h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedPosts.map((post) => (
-              <Card key={post.id} className="flex flex-col overflow-hidden transition duration-300 transform hover:scale-105 hover:shadow-lg">
-                <div className="relative w-full h-48 sm:h-40 md:h-48">
-                  {post.featuredImage && (
-                    <img
-                      src={
-                        post.featuredImage.startsWith("http")
-                          ? post.featuredImage
-                          : `${API_URL.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
-                      }
-                      alt={post.title}
-                      className="object-cover w-full h-full"
-                    />
+            {posts.length === 0 ? (
+              <div className="text-center py-20 bg-gray-50 rounded-3xl">
+                <div className="max-w-md mx-auto">
+                  <SearchIcon className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                  <p className="text-xl text-gray-500 mb-6">No articles found</p>
+                  {searchTerm && (
+                    <Button 
+                      onClick={() => setSearchTerm("")} 
+                      variant="outline" 
+                      className="border-2 border-green-500 text-green-600 hover:bg-green-50 rounded-full"
+                    >
+                      Clear Search
+                    </Button>
                   )}
                 </div>
-                <CardContent className="flex-grow p-4">
-                  <div className="flex flex-wrap items-center gap-4 mb-2 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <CalendarIcon className="flex-shrink-0 w-4 h-4" />
-                      <span className="truncate">
-                        {post.publishedAt
-                          ? new Date(post.publishedAt).toLocaleDateString('en-US', {
+              </div>
+            ) : (
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {posts.map((post) => (
+                  <article key={post.id} className="group cursor-pointer">
+                    <Link to={`/blog/${post.slug}`}>
+                      <div className="relative overflow-hidden rounded-2xl mb-4">
+                        {post.featuredImage && (
+                          <img
+                            src={
+                              post.featuredImage.startsWith("http")
+                                ? post.featuredImage
+                                : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                            }
+                            alt={post.title}
+                            className="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-4 left-4">
+                          <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-semibold text-gray-800">
+                            {post.category?.name || 'Uncategorized'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {post.publishedAt && new Date(post.publishedAt).toLocaleDateString('en-US', {
                               month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })
-                          : ""}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <UserIcon className="flex-shrink-0 w-4 h-4" />
-                      <span className="truncate">{post.author?.fullName}</span>
-                    </div>
-                  </div>
-                  <h3
-                    className="mb-2 text-lg font-semibold text-green-800 line-clamp-2"
-                  >
-                    {post.title}
-                  </h3>
-                  <div
-                    className="mb-4 text-gray-600 line-clamp-3"
-                  >
-                    {truncateText(post.shortDescription || "", 80)}
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Link to={`/blog/${post.slug}`} className="w-full">
-                    <Button variant="default" className="w-full bg-green-600 hover:bg-green-700">
-                      Read More
+                              day: 'numeric'
+                            })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <ClockIcon className="w-3 h-3" />
+                            {post.readTime || 5} min
+                          </span>
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-200 line-clamp-2">
+                          {post.title}
+                        </h3>
+                        
+                        <p className="text-gray-600 line-clamp-2">
+                          {truncateText(post.shortDescription || "", 100)}
+                        </p>
+                        
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center gap-1 text-sm text-gray-500">
+                            <UserIcon className="w-3 h-3" />
+                            <span>{post.author?.fullName || 'Anonymous'}</span>
+                          </div>
+                          <span className="text-green-600 font-semibold text-sm group-hover:gap-2 flex items-center transition-all duration-200">
+                            Read more
+                            <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform duration-200" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {posts.length > 0 && totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-16">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="rounded-full border-2 hover:bg-green-50 disabled:opacity-50"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                
+                <div className="flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <Button
+                      key={i}
+                      variant={currentPage === i + 1 ? "default" : "ghost"}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-10 h-10 rounded-full ${
+                        currentPage === i + 1 
+                          ? "bg-green-600 hover:bg-green-700 text-white" 
+                          : "hover:bg-green-50"
+                      }`}
+                    >
+                      {i + 1}
                     </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
+                  ))}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="rounded-full border-2 hover:bg-green-50 disabled:opacity-50"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
+
+          {/* Sidebar */}
+          <aside className="space-y-8 lg:col-span-1">
+            {/* Recent Posts */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              <div className="p-6 bg-gradient-to-r from-green-600 to-green-700">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <ClockIcon className="w-5 h-5" />
+                  Recent Posts
+                </h3>
+              </div>
+              <div className="p-6">
+                {recentPosts.length === 0 ? (
+                  <p className="text-gray-500 text-sm">No recent posts available.</p>
+                ) : (
+                  <ul className="space-y-4">
+                    {recentPosts.slice(0, 5).map((post) => (
+                      <li key={post.id} className="group">
+                        <Link to={`/blog/${post.slug}`} className="block">
+                          <h4 className="font-medium text-gray-900 group-hover:text-green-600 transition-colors duration-200 line-clamp-2 mb-1">
+                            {post.title}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {post.publishedAt && new Date(post.publishedAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {/* Categories */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+              <div className="p-6 bg-gradient-to-r from-green-600 to-green-700">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <TagIcon className="w-5 h-5" />
+                  Categories
+                </h3>
+              </div>
+              <div className="p-6">
+                {categories.length === 0 ? (
+                  <p className="text-gray-500 text-sm">No categories available.</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((category) => (
+                      <Link 
+                        key={category.id} 
+                        to={`/category/${category.slug}`}
+                        className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-full text-sm font-medium transition-colors duration-200"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Newsletter */}
+            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl shadow-lg p-6 text-white">
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto">
+                  <Sparkles className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-bold">Stay Updated</h3>
+                <p className="text-white/90 text-sm">Get the latest insights delivered to your inbox</p>
+                <form onSubmit={handleSubscribe} className="space-y-3">
+                  <Input
+                    type="email"
+                    placeholder="Your email"
+                    value={subscribeEmail}
+                    onChange={e => setSubscribeEmail(e.target.value)}
+                    required
+                    className="bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30"
+                  />
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-white text-green-700 hover:bg-gray-100 font-semibold"
+                  >
+                    Subscribe Now
+                  </Button>
+                </form>
+                {subscribeError && (
+                  <p className="text-sm text-red-500 mt-2">{subscribeError}</p>
+                )}
+                {showSuccessMessage && (
+                  <p className="text-sm text-green-500 mt-2">Subscription successful!</p>
+                )}
+              </div>
+            </div>
+          </aside>
         </div>
 
-        <CallToActionSection />
-        <ScrollOnSideSection />
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <section className="mt-20">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">You Might Also Like</h2>
+              <p className="text-gray-600">Discover more stories that matter</p>
+            </div>
+            
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedPosts.map((post) => (
+                <article key={post.id} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300">
+                  <Link to={`/blog/${post.slug}`}>
+                    {post.featuredImage && (
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={
+                            post.featuredImage.startsWith("http")
+                              ? post.featuredImage
+                              : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                          }
+                          alt={post.title}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {post.publishedAt && new Date(post.publishedAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <UserIcon className="w-3 h-3" />
+                          {post.author?.fullName || 'Anonymous'}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-200 mb-2 line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm line-clamp-2">
+                        {truncateText(post.shortDescription || "", 80)}
+                      </p>
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   )

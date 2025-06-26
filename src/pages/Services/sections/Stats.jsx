@@ -1,4 +1,4 @@
-'use client'
+{/*'use client'
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -139,4 +139,4 @@ const Stats = () => {
   )
 }
 
-export default Stats
+export default Stats*/}

@@ -1,215 +1,347 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { motion } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence, useInView } from "framer-motion"
 import {
-  Plane,
-  Ship,
-  Warehouse,
-  FileCheck,
-  ShoppingCart,
-  Package,
-  Globe,
-  Clock,
-  ArrowRight,
-  FileText,
+  Plane, Ship, Warehouse, FileCheck, ShoppingCart, Package, Globe, Clock,
+  ArrowRight, FileText, Truck, MapPin, BarChart3, Shield, Zap
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { logisticsServices } from "@/constants/servicepage"
+import { Link, useLocation } from "react-router-dom";
 
-const ServiceCard = ({ Icon, label, id, onClick, isActive }) => (
-  <motion.div
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => onClick(id)}
-    className={`cursor-pointer ${isActive ? "ring-2 ring-green-500 ring-offset-2" : ""} rounded-lg overflow-hidden`}
-  >
-    <Card
-      className={`flex items-center gap-4 p-4 transition-all hover:shadow-lg ${
-        isActive ? "bg-green-50" : "hover:bg-gray-50"
-      }`}
-    >
-      <div className="bg-gradient-to-br from-green-500 to-green-600 p-3 rounded-full shadow-md">
-        <Icon className="h-6 w-6 text-white" />
-      </div>
-      <div className="text-sm font-medium text-gray-800">{label}</div>
-    </Card>
-  </motion.div>
-)
-
-const LiveClock = () => {
-  const [time, setTime] = useState(new Date())
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date())
-    }, 1000)
-
-    return () => {
-      clearInterval(timer)
-    }
-  }, [])
-
-  return (
-    <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-md flex items-center space-x-2 z-10">
-      <Clock className="h-4 w-4 text-green-600" />
-      <span className="text-sm font-mono font-semibold">
-        {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-      </span>
-    </div>
-  )
-}
-
-const ShippingServices = () => {
-  const navigate = useNavigate()
+const LogisticServices = () => {
   const [activeService, setActiveService] = useState("air-freight")
-  const [activeTab, setActiveTab] = useState("all")
+  const [hoveredService, setHoveredService] = useState(null)
+  const [activeCategory, setActiveCategory] = useState("all")
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  // Add Importer of Record service to the list
   const services = [
-    { id: "air-freight", Icon: Plane, label: "Air Freight" },
-    { id: "sea-freight", Icon: Ship, label: "Sea Freight" },
-    { id: "warehouse-distribution", Icon: Warehouse, label: "Warehouse" },
-    { id: "customs-clearance", Icon: FileCheck, label: "Custom Clearance" },
-    { id: "ecommerce", Icon: ShoppingCart, label: "E-commerce" },
-    { id: "consolidation", Icon: Package, label: "Consolidation" },
-    { id: "importer-of-record", Icon: FileText, label: "Importer of Record (IOR)" },
-    { id: "international-import", Icon: Globe, label: "International Import" },
+    {
+      id: "air-freight",
+      icon: Plane,
+      title: "Air Freight",
+      category: "freight",
+      color: "from-blue-500 to-cyan-500",
+      features: ["Express Delivery", "Global Network", "Real-time Tracking"],
+      description: "Lightning-fast air cargo solutions with guaranteed delivery times across 150+ destinations worldwide.",
+      stats: { speed: "1-3 Days", coverage: "Global", reliability: "99.8%" }
+    },
+    {
+      id: "sea-freight",
+      icon: Ship,
+      title: "Ocean Freight",
+      category: "freight",
+      color: "from-teal-500 to-blue-500",
+      features: ["Cost-Effective", "Bulk Cargo", "FCL & LCL"],
+      description: "Economical ocean transportation for large shipments with flexible container options.",
+      stats: { speed: "15-45 Days", coverage: "Worldwide", capacity: "Unlimited" }
+    },
+    {
+      id: "warehouse",
+      icon: Warehouse,
+      title: "Smart Warehousing",
+      category: "logistics",
+      color: "from-purple-500 to-pink-500",
+      features: ["24/7 Security", "Climate Control", "Inventory Management"],
+      description: "State-of-the-art storage facilities with tech driven inventory management systems.",
+      stats: { locations: "2+", space: "500 sq ft", technology: "WMS" }
+    },
+    {
+      id: "customs",
+      icon: FileCheck,
+      title: "Customs Clearance",
+      category: "compliance",
+      color: "from-green-500 to-emerald-500",
+      features: ["Expert Brokers", "Fast Processing", "Compliance"],
+      description: "Seamless customs clearance with dedicated experts ensuring regulatory compliance.",
+      stats: { clearance: "24-48h", success: "100%", countries: "50+" }
+    },
+    {
+      id: "ecommerce",
+      icon: ShoppingCart,
+      title: "E-commerce Fulfillment",
+      category: "digital",
+      color: "from-orange-500 to-red-500",
+      features: ["Order Management", "Last-Mile Delivery", "Returns"],
+      description: "End-to-end e-commerce solutions from storage to doorstep delivery.",
+      stats: { orders: "10K+ Daily", accuracy: "99.9%", integration: "All Platforms" }
+    },
+    {
+      id: "road-transport",
+      icon: Truck,
+      title: "Road Transport",
+      category: "freight",
+      color: "from-amber-500 to-orange-500",
+      features: ["Door-to-Door", " Tracking System", "Flexible Routes"],
+      description: "Reliable road transportation across East Africa with real-time visibility.",
+      stats: { fleet: "200+ Trucks", coverage: "East Africa", tracking: "Real-time" }
+    }
   ]
 
-  // Group services by category
-  const serviceCategories = {
-    all: services,
-    freight: services.filter((s) => s.id.includes("freight")),
-    logistics: services.filter((s) => ["warehouse-distribution", "consolidation"].includes(s.id)),
-    customs: services.filter((s) => ["customs-clearance", "importer-of-record"].includes(s.id)),
-    ecommerce: services.filter((s) => ["ecommerce", "international-import"].includes(s.id)),
-  }
+  const categories = [
+    { id: "all", label: "All Services", icon: Globe },
+    { id: "freight", label: "Freight", icon: Truck },
+    { id: "logistics", label: "Logistics", icon: Warehouse },
+    { id: "compliance", label: "Compliance", icon: Shield },
+    { id: "digital", label: "Digital", icon: Zap }
+  ]
 
-  const handleServiceClick = (id) => {
-    setActiveService(id)
-    // Navigate to service detail page
-    // navigate(`/services/${id}`)
-  }
+  const filteredServices = activeCategory === "all" 
+    ? services 
+    : services.filter(s => s.category === activeCategory)
 
-  // Find the active service details from logisticsServices
-  const activeServiceDetails = logisticsServices.find((s) => s.id === activeService) || {
-    title: "Importer of Record (IOR)",
-    desc: "Our Importer of Record (IOR) service enables businesses to import goods into countries where they don't have a legal entity. We handle all customs compliance, duties, and taxes, ensuring smooth international trade operations.",
-    img: "/placeholder.svg",
-  }
+  const activeServiceData = services.find(s => s.id === activeService) || services[0]
 
   return (
-    <section
-      className="w-full py-20 md:py-28 bg-gradient-to-b from-white to-gray-50 -mt-12 relative z-10"
-      aria-labelledby="shipping-services-heading"
-    >
-      {/* SEO-friendly hidden heading */}
-      <h2 id="shipping-services-heading" className="sr-only">
-        Globeflight Kenya Shipping and Logistics Services
-      </h2>
+    <section ref={ref} className="relative py-24 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div
+           className="absolute inset-0 opacity-50" 
+                style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239CA3AF' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}>
+          
+        </div>
 
-      <div className="container px-4 md:px-6 mx-auto">
-        <div className="grid gap-16 lg:grid-cols-2 items-center">
+        <motion.div
+          className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-green-200 to-blue-200 rounded-full blur-3xl opacity-20"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+
+      <div className="container relative z-10 px-4 mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-16 text-center"
+        >
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="space-y-10"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.1 }}
+            className="inline-flex items-center px-6 py-2 mb-4 space-x-2 rounded-full bg-gradient-to-r from-green-500/10 to-blue-500/10"
           >
-            <div className="space-y-4">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium"
-              >
-                Comprehensive Solutions
-              </motion.div>
-              <h3 className="text-4xl font-bold tracking-tighter sm:text-5xl text-green-600">
-                FOR ALL YOUR SHIPMENT SERVICES
-              </h3>
-              <div className="w-20 h-1 bg-green-600 rounded-full" />
-              <p className="text-gray-600 md:text-lg leading-relaxed">
-                Learn about Globeflight – the undisputed leader in international express shipping and logistics across
-                East Africa. With over 25 years of experience, we deliver reliable and efficient solutions for all your
-                shipping needs.
-              </p>
-            </div>
+            <MapPin className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-semibold text-gray-700">COMPREHENSIVE SOLUTIONS</span>
+          </motion.div>
+          
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2 }}
+            className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl"
+          >
+            <span className="text-transparent bg-gradient-to-r from-green-500 to-blue-600 bg-clip-text">
+              Shipping Services
+            </span>
+            <br />
+            <span className="text-gray-900">That Drive Success</span>
+          </motion.h2>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.3 }}
+            className="max-w-2xl mx-auto text-lg text-gray-600"
+          >
+            Experience the future of logistics with our cutting-edge solutions designed for modern businesses
+          </motion.p>
+        </motion.div>
 
-            <div className="space-y-6">
-              <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-5 mb-6">
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="freight">Freight</TabsTrigger>
-                  <TabsTrigger value="logistics">Logistics</TabsTrigger>
-                  <TabsTrigger value="customs">Customs</TabsTrigger>
-                  <TabsTrigger value="ecommerce">E-commerce</TabsTrigger>
-                </TabsList>
+        {/* Category Filter */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4 }}
+          className="flex flex-wrap justify-center gap-3 mb-12"
+        >
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`group flex items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all ${
+                activeCategory === cat.id
+                  ? "bg-gradient-to-r from-green-500 to-blue-600 text-white shadow-lg scale-105"
+                  : "bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg"
+              }`}
+            >
+              <cat.icon className="w-4 h-4" />
+              <span>{cat.label}</span>
+            </button>
+          ))}
+        </motion.div>
 
-                {Object.keys(serviceCategories).map((category) => (
-                  <TabsContent key={category} value={category} className="mt-0">
-                    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                      {serviceCategories[category].map((service) => (
-                        <ServiceCard
-                          key={service.id}
-                          Icon={service.Icon}
-                          label={service.label}
-                          id={service.id}
-                          onClick={handleServiceClick}
-                          isActive={activeService === service.id}
-                        />
+        {/* Main Content Grid */}
+        <div className="grid items-start gap-12 lg:grid-cols-2">
+          {/* Services Grid */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.5 }}
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+          >
+            <AnimatePresence mode="popLayout">
+              {filteredServices.map((service, index) => (
+                <motion.div
+                  key={service.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  onHoverStart={() => setHoveredService(service.id)}
+                  onHoverEnd={() => setHoveredService(null)}
+                  onClick={() => setActiveService(service.id)}
+                  className={`cursor-pointer group relative overflow-hidden rounded-2xl transition-all ${
+                    activeService === service.id
+                      ? "ring-2 ring-offset-2 ring-green-500 shadow-xl"
+                      : "shadow-lg hover:shadow-2xl"
+                  }`}
+                >
+                  <div className={`p-6 bg-white ${
+                    activeService === service.id ? "bg-gradient-to-br from-green-50 to-blue-50" : ""
+                  }`}>
+                    {/* Icon with gradient background */}
+                    <motion.div
+                      animate={hoveredService === service.id ? { scale: 1.1, rotate: 5 } : { scale: 1, rotate: 0 }}
+                      className={`w-14 h-14 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center mb-4 shadow-lg`}
+                    >
+                      <service.icon className="text-white h-7 w-7" />
+                    </motion.div>
+
+                    {/* Content */}
+                    <h3 className="mb-2 text-lg font-bold text-gray-900">{service.title}</h3>
+                    
+                    {/* Features Pills */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {service.features.slice(0, 2).map((feature, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-1 text-xs text-gray-600 bg-gray-100 rounded-full"
+                        >
+                          {feature}
+                        </span>
                       ))}
                     </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            </div>
 
-            <Button
-              size="lg"
-              onClick={() => navigate("/services")}
-              className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white group"
-            >
-              <span>Explore All Globeflight Services</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+                    {/* Active Indicator */}
+                    <motion.div
+                      className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r ${service.color}`}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: activeService === service.id ? 1 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      style={{ originX: 0 }}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </motion.div>
 
+          {/* Active Service Details */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="relative"
+            key={activeService}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="sticky top-24"
           >
-            <LiveClock />
-            <Card className="overflow-hidden shadow-xl">
-              <div className="relative h-[400px]">
-                <img
-                  alt={`Globeflight ${activeServiceDetails.title} service`}
-                  className="w-full h-full object-cover"
-                  src={activeServiceDetails.img || "/placeholder.svg"}
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-green-800/40 to-green-400/20"></div>
-              </div>
-
-              <div className="p-6 bg-white">
-                <h4 className="text-2xl font-bold mb-3 text-green-600">{activeServiceDetails.title}</h4>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{activeServiceDetails.desc}</p>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 border-green-600 text-green-600 hover:bg-green-50"
-                  onClick={() => navigate(`/services/${activeService}`)}
+            <div className="overflow-hidden bg-white shadow-2xl rounded-3xl">
+              {/* Header with gradient */}
+              <div className={`relative h-48 bg-gradient-to-br ${activeServiceData.color} p-8`}>
+                <div className="absolute inset-0 bg-black/10" />
+                <motion.div
+                  initial={{ scale: 0.8, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative z-10"
                 >
-                  Learn More
-                </Button>
+                  <activeServiceData.icon className="w-16 h-16 mb-4 text-white" />
+                  <h3 className="text-3xl font-bold text-white">{activeServiceData.title}</h3>
+                </motion.div>
+                
+                {/* Floating particles */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-20 h-20 rounded-full bg-white/10"
+                    style={{
+                      top: `${20 + i * 30}%`,
+                      right: `${10 + i * 20}%`,
+                    }}
+                    animate={{
+                      y: [-10, 10, -10],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 3 + i,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
               </div>
-            </Card>
+
+              {/* Content */}
+              <div className="p-8">
+                <p className="mb-6 leading-relaxed text-gray-600">
+                  {activeServiceData.description}
+                </p>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  {Object.entries(activeServiceData.stats).map(([key, value]) => (
+                    <div key={key} className="p-4 text-center bg-gray-50 rounded-xl">
+                      <p className="mb-1 text-sm text-gray-600 capitalize">{key}</p>
+                      <p className="text-lg font-bold text-gray-900">{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Features List */}
+                <div className="mb-8 space-y-3">
+                  {activeServiceData.features.map((feature, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-center space-x-3"
+                    >
+                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${activeServiceData.color} flex items-center justify-center`}>
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-gray-700">{feature}</span>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex gap-4">
+                  <button className="flex-1 px-6 py-3 font-semibold text-white transition-all bg-gradient-to-r from-green-500 to-blue-600 rounded-xl hover:shadow-lg hover:scale-105">
+                    <Link to ="/contact-us" className="flex items-center justify-center">
+                    Get Quote
+                    </Link>
+                  </button>
+                  <button className="flex-1 px-6 py-3 font-semibold text-gray-700 transition-all border-2 border-gray-200 rounded-xl hover:bg-gray-50">
+                    <Link to="/services" className="flex items-center justify-center">
+                       
+                    Learn More
+                     </Link>
+                  </button>
+                 
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -217,4 +349,4 @@ const ShippingServices = () => {
   )
 }
 
-export default ShippingServices
+export default LogisticServices

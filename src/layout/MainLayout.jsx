@@ -3,6 +3,8 @@ import Navbar from './components/Navbar'
 import { Outlet } from 'react-router-dom'
 import Footer from './components/Footer'
 import { footerItems, navbaritems } from '@/constants/layout'
+import TawkToComponent from '@/components/TawkToComponent'
+
 
 const MainLayout = () => {
   return (
@@ -17,6 +19,9 @@ const MainLayout = () => {
 
       {/* Footer */}
       <Footer data={footerItems} />
+
+      {/* TawkToComponent */}
+      <TawkToComponent />
     </div>
   );
 }

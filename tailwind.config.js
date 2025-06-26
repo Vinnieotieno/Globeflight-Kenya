@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      screens: {
+        'xs': '475px',
+      },
       colors: {
         brandRed: "#ED203A",
         brandBluish:"#57C9E9",

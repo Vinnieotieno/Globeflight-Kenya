@@ -12,15 +12,74 @@ const Hero = () => {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
 
-  const handleQuickContact = (e) => {
+  const handleQuickContact = async (e) => {
     e.preventDefault()
-    console.log('Quick contact:', { email, message })
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you as soon as possible.",
-    })
-    setEmail('')
-    setMessage('')
+    
+    if (!email.trim() || !message.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      console.log('Quick contact:', { email, message })
+      
+      // Use the backend API endpoint with fallback
+      const apiEndpoint = import.meta.env.VITE_API_URL 
+        ? `${import.meta.env.VITE_API_URL}/contacts/public`
+        : 'http://globeflight.co.ke/api/contacts/public'
+      
+      console.log('Using API endpoint:', apiEndpoint)
+      
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'Quick Contact User',
+          email: email,
+          mobileNumber: '',
+          services: [],
+          inquiryType: 'feedback',
+          message: message
+        }),
+      })
+
+      console.log('Response status:', response.status)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API error response text:', errorText)
+        let errorData
+        try {
+          errorData = JSON.parse(errorText)
+        } catch (e) {
+          errorData = { message: `HTTP ${response.status}: ${errorText}` }
+        }
+        throw new Error(errorData.message || `Failed to send message. Status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('API response:', data)
+      
+      toast({
+        title: "Message Sent!",
+        description: data.message || "We'll get back to you as soon as possible.",
+      })
+      setEmail('')
+      setMessage('')
+    } catch (error) {
+      console.error('Error sending quick contact:', error)
+      toast({
+        title: "Error",
+        description: error.message || "There was a problem sending your message. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   return (
@@ -55,7 +114,7 @@ const Hero = () => {
             <div className="space-y-4 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start text-white">
                 <Phone className="w-6 h-6 mr-3 text-green-400" />
-                <span>+254 123 456 789</span>
+                <span>+254 729 341 277</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start text-white">
                 <Mail className="w-6 h-6 mr-3 text-green-400" />

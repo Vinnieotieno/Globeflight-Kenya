@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import LoaderOnPageMount from "./components/LoaderOnPgeMount.jsx";
+import "@/lib/leafletIconFix"
 
 const AppContainer = () => {
   const [contentRendered, setContentRendered] = useState(false);

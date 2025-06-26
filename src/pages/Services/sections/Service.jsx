@@ -22,7 +22,7 @@ export default function Service() {
   useEffect(() => {
     async function fetchServices() {
       try {
-        const res = await fetch('http://localhost:5000/api/services/public?limit=100');
+        const res = await fetch('http://globeflight.co.ke/api/services/public?limit=100');
         const data = await res.json();
         if (data.success) {
           setServices(data.data.services);

@@ -38,27 +38,13 @@ function App() {
             }
           />
           
-          {/* Blog Routes */}
-          <Route
-            path="blog"
-            element={
-              <Suspense fallback={<div className="py-20 text-center">Loading Blog Page...</div>}>
-                <BlogPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="blog/:slug"
-            element={
-              <Suspense fallback={<div className="py-20 text-center">Loading Blog Post...</div>}>
-                <BlogDetail />
-              </Suspense>
-            }
-          />
-          {/* Blog Home with nested routes */}
-          <Route path="blog/*" element={<BlogHome />} />
-          {/* Direct category route at root (optional, only if you want /category/:slug to work) */}
-          <Route path="category/:slug" element={<BlogCategoryPage />} />
+          {/* Blog Routes - All blog routes under /blog */}
+          <Route path="blog" element={<BlogHome />}>
+            <Route index element={<BlogPage />} />
+            <Route path=":slug" element={<BlogDetail />} />
+            <Route path="category/:slug" element={<BlogCategoryPage />} />
+          </Route>
+          
           {/* Add Job Page route */}
           <Route
             path="jobs"

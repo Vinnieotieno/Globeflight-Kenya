@@ -3,7 +3,7 @@
 import Container from "@/components/Container";
 import React from "react";
 import Hero from "./sections/Hero";
-import Stats from "./sections/Stats";
+
 import Service from "./sections/Service";
 import WhereWeShip from "@/components/WhereWeShip";
 import CallToActionSection from "@/components/CallToActionSection";
@@ -16,7 +16,7 @@ const HomePage = () => {
     <div className="main-container">
       <Hero />
       <Container>
-        <Stats />
+        
         <Service />
         <WhereWeShip 
           title="Experience Seamless Immigration Services" 

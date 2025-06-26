@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, Send, MapPin, Phone, Mail, Globe, Plane, Ship, FileCheck, Warehouse, ShoppingCart, Truck, Package, MessageSquare, HelpCircle } from "lucide-react"
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import '@/lib/leafletIconFix'
 
 const contactFormSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -126,62 +127,79 @@ export default function GlobalflightContactForm() {
   }, [activeOffice])
 
   async function onSubmit(values) {
-    setIsSubmitting(true)
-    try {
-      console.log("Submitting form with values:", values)
-      const response = await fetch('/email-api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      })
-  
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error("API error response:", errorText)
-        throw new Error(`Failed to send message. Status: ${response.status}`)
+  setIsSubmitting(true)
+  try {
+    console.log("Submitting form with values:", values)
+    
+    // Use the backend API endpoint with fallback
+    const apiEndpoint = import.meta.env.VITE_API_URL 
+      ? `${import.meta.env.VITE_API_URL}/contacts/public`
+      : 'http://globeflight.co.ke/api/contacts/public'
+    
+    console.log("Using API endpoint:", apiEndpoint)
+    
+    const response = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    })
+
+    console.log("Response status:", response.status)
+    console.log("Response headers:", response.headers)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("API error response text:", errorText)
+      let errorData
+      try {
+        errorData = JSON.parse(errorText)
+      } catch (e) {
+        errorData = { message: `HTTP ${response.status}: ${errorText}` }
       }
-
-      const data = await response.json()
-      console.log("API response:", data)
-
-      console.log("Showing success toast")
-      toast({
-        title: "Message Sent Successfully!",
-        description: "Thank you for contacting Globeflight Worldwide Express. We'll get back to you shortly.",
-        duration: 5000,
-      })
-      form.reset()
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      console.log("Showing error toast")
-      toast({
-        title: "Error",
-        description: error.message || "There was a problem sending your message. Please try again or contact us directly.",
-        variant: "destructive",
-        duration: 5000,
-      })
-    } finally {
-      setIsSubmitting(false)
+      throw new Error(errorData.message || `Failed to send message. Status: ${response.status}`)
     }
+
+    const data = await response.json()
+    console.log("API response:", data)
+
+    console.log("Showing success toast")
+    toast({
+      title: "Message Sent Successfully!",
+      description: data.message || "Thank you for contacting Globeflight Worldwide Express. We'll get back to you shortly.",
+      duration: 5000,
+    })
+    form.reset()
+  } catch (error) {
+    console.error("Error submitting form:", error)
+    console.log("Showing error toast")
+    toast({
+      title: "Error",
+      description: error.message || "There was a problem sending your message. Please try again or contact us directly.",
+      variant: "destructive",
+      duration: 5000,
+    })
+  } finally {
+    setIsSubmitting(false)
   }
+}
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-16">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen py-16 bg-gradient-to-b from-green-50 to-white">
+      <div className="container px-4 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-center mb-4 text-green-600">Contact Globeflight</h1>
-          <p className="text-xl text-center text-gray-600 mb-12">Let us know how we can assist with your logistics needs</p>
+          <h1 className="mb-4 text-4xl font-bold text-center text-green-600 md:text-5xl">Contact Globeflight</h1>
+          <p className="mb-12 text-xl text-center text-gray-600">Let us know how we can assist with your logistics needs</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <Card className="lg:col-span-2 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="bg-green-600 text-white rounded-t-lg">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <Card className="transition-shadow duration-300 shadow-lg lg:col-span-2 hover:shadow-xl">
+            <CardHeader className="text-white bg-green-600 rounded-t-lg">
               <CardTitle className="text-2xl font-bold">Get in Touch</CardTitle>
               <CardDescription className="text-green-100">Fill out the form below and we'll respond promptly</CardDescription>
             </CardHeader>
@@ -201,7 +219,7 @@ export default function GlobalflightContactForm() {
                       </FormItem>
                     )}
                   />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <FormField
                       control={form.control}
                       name="email"
@@ -267,7 +285,7 @@ export default function GlobalflightContactForm() {
                         <FormDescription>
                           Select the services you'd like to know more about
                         </FormDescription>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                           {services.map((service) => (
                             <FormItem
                               key={service.id}
@@ -284,7 +302,7 @@ export default function GlobalflightContactForm() {
                                   }}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal cursor-pointer flex items-center">
+                              <FormLabel className="flex items-center font-normal cursor-pointer">
                                 {React.createElement(service.icon, { className: "mr-2 h-4 w-4" })}
                                 {service.label}
                               </FormLabel>
@@ -316,13 +334,13 @@ export default function GlobalflightContactForm() {
                   <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Sending...
                       </>
                     ) : (
                       <>
                         Send Message
-                        <Send className="ml-2 h-4 w-4" />
+                        <Send className="w-4 h-4 ml-2" />
                       </>
                     )}
                   </Button>
@@ -332,14 +350,14 @@ export default function GlobalflightContactForm() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="bg-green-600 text-white rounded-t-lg">
+            <Card className="transition-shadow duration-300 shadow-lg hover:shadow-xl">
+              <CardHeader className="text-white bg-green-600 rounded-t-lg">
                 <CardTitle className="text-xl font-bold">Our Global Offices</CardTitle>
                 <CardDescription className="text-green-100">Serving you worldwide</CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <Tabs defaultValue="Kenya (HQ)" onValueChange={(value) => setActiveOffice(value)}>
-                  <TabsList className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                  <TabsList className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
                     {offices.map((office) => (
                       <TabsTrigger key={office.country} value={office.country} className="text-sm">
                         {office.country}
@@ -350,19 +368,18 @@ export default function GlobalflightContactForm() {
                     <TabsContent key={office.country} value={office.country} className="mt-4">
                       <Card>
                         <CardContent className="p-4">
-                          <h4 className="font-bold mb-2">{office.country}</h4>
+                          <h4 className="mb-2 font-bold">{office.country}</h4>
                           <ul className="space-y-2 text-sm">
                             <li className="flex items-center">
-                              <MapPin className="mr-2 h-4 w-4 text-
-green-600" />
+                              <MapPin className="w-4 h-4 mr-2 text- green-600" />
                               <span>{office.address}</span>
                             </li>
                             <li className="flex items-center">
-                              <Phone className="mr-2 h-4 w-4 text-green-600" />
+                              <Phone className="w-4 h-4 mr-2 text-green-600" />
                               <a href={`tel:${office.phone}`} className="text-green-600 hover:underline">{office.phone}</a>
                             </li>
                             <li className="flex items-center">
-                              <Mail className="mr-2 h-4 w-4 text-green-600" />
+                              <Mail className="w-4 h-4 mr-2 text-green-600" />
                               <a href={`mailto:${office.email}`} className="text-green-600 hover:underline">{office.email}</a>
                             </li>
                           </ul>
@@ -379,11 +396,11 @@ green-600" />
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card className="hover:shadow-md transition-shadow duration-300">
+              <Card className="transition-shadow duration-300 hover:shadow-md">
                 <CardHeader>
                   <div className="flex items-center space-x-4">
-                    <div className="p-2 rounded-full bg-green-100">
-                      <Globe className="h-6 w-6 text-green-600" />
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <Globe className="w-6 h-6 text-green-600" />
                     </div>
                     <div>
                       <CardTitle className="text-lg font-semibold">Global Network</CardTitle>
@@ -392,7 +409,7 @@ green-600" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div id="map" className="h-64 rounded-lg shadow-md mb-4"></div>
+                  <div id="map" className="h-64 mb-4 rounded-lg shadow-md"></div>
                   <div className="flex space-x-4">
                     <a href="/home" className="text-sm font-medium text-green-600 hover:underline">
                       Our Network
