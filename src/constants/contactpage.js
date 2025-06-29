@@ -54,47 +54,45 @@ export const contactCards = [
 
 export const faqs = [
   {
-    question: "WHAT REGIONS IN EAST AFRICA DO YOU COVER?",
+    question: "What regions in East Africa do you cover?",
     answer:
       "We provide distribution services across East Africa, covering countries such as Kenya, Tanzania, Uganda, Rwanda, Ethiopia,and more. Our extensive network ensures seamless transportation within these regions.",
   },
   {
-    question: "WHAT TYPES OF GOODS DO YOU TRANSPORT?",
+    question: "What types of goods do you transport?",
     answer:
       "We handle a wide range of goods, including perishables, bulk goods, retail products, electronics, pharmaceuticals, and more. Our experienced team ensures the safe and secure transportation of your goods, regardless of their nature.",
   },
   {
-    question: "How do I know my freight charges? ",
+    question: "How do I know my freight charges?",
     answer:
       "Please send us an email. Value added services such as door delivery and re-packaging for international shipping are chargeable.",
   },
   {
-    question: "HOW DO YOU ENSURE THE SAFETY OF MY GOODS DURING TRANSPORTATION?",
+    question: "How do you ensure the safety of my goods during transportation?",
     answer:
       "We prioritize the safety and security of your goods. Our fleet of vehicles is regularly maintained, equipped with advanced tracking systems, and operated by skilled drivers trained in safe handling practices. Additionally, we offer insurance coverage options to provide additional peace of mind.",
   },
-
   {
-    question: "CAN YOU ACCOMMODATE SPECIFIC DELIVERY SCHEDULES?",
+    question: "Can you accommodate specific delivery schedules?",
     answer:
       "Absolutely. We understand the importance ofmeeting delivery deadlines. Our team works closely with you to understand your /n requirements and develop customized delivery schedules that align with your business needs.",
   },
   {
-    question: "WHY CHOOSE US AS GLOBEFLIGHT KENYA ?",
+    question: "Why choose us as Globeflight Kenya?",
     answer:
       "With over 25 years of experience in the logistics industry, we have honed our expertise, developed strong relationships, and gained in-depth knowledge of the East African market.",
   },
   {
-    question: "DO YOU OFFER WAREHOUSING AND STORAGE SOLUTIONS?",
+    question: "Do you offer warehousing and storage solutions?",
     answer:
       "Yes, we offer warehousing and storage solutions to accommodate your inventory needs. Our secure facilities are equipped to handle various types of goods, providing you with flexible storage options as per your requirements.",
   },
   {
-    question: "HOW CAN I KEEP TRACK OF MY SHIPMENTS?",
+    question: "How can I keep track of my shipments?",
     answer:
       "We appreciate the importance of tracking your shipments and staying up to date on their journey at Globeflight and Union Green. We have a dedicated customer support team that keeps you informed at all times.When you entrust us with your shipment, our customer service representatives keep you updated on the status and location of your items on a frequent basis. You can count on our team to respond quickly to \n any questions or issues you may have about your cargo.",
   },
-
   {
     question: "What is minimum chargeable weight and how does it affect me?",
     answer:

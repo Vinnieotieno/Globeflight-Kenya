@@ -24,6 +24,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 20, stiffness: 300 }}
           className="fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white shadow-2xl lg:hidden overflow-y-auto"
+          aria-label="Main navigation"
         >
           {/* Mobile menu header */}
           <div className="p-6 border-b border-gray-100">
@@ -46,110 +47,116 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
           {/* Mobile menu items */}
           <div className="p-6">
             <ul className="space-y-1">
-              {data.navItems.map(({ link, path, external }, index) => (
-                <motion.li
-                  key={path}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  {external ? (
-                    <a
-                      href={path}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block px-4 py-3 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-300 font-medium"
-                      onClick={toggleMobileMenu}
-                    >
-                      {link}
-                    </a>
-                  ) : (
-                    <Link
-                      to={path}
-                      className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${
-                        pathname === path 
-                          ? "bg-green-50 text-green-600" 
-                          : "text-gray-700 hover:text-green-600 hover:bg-green-50"
-                      }`}
-                      onClick={toggleMobileMenu}
-                    >
-                      {link}
-                    </Link>
-                  )}
-                </motion.li>
-              ))}
-              {/* Additional mobile menu items */}
+              {/* Home link for SEO */}
               <motion.li
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
+                transition={{ duration: 0.3, delay: 0.01 }}
               >
                 <Link
-                  to="/track"
-                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${
-                    pathname === "/track" 
-                      ? "bg-green-50 text-green-600" 
-                      : "text-gray-700 hover:text-green-600 hover:bg-green-50"
-                  }`}
+                  to="/"
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
+                  title="Home"
                 >
-                  Track
+                  Home
                 </Link>
               </motion.li>
+              {/* Our Services link for SEO */}
               <motion.li
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.25 }}
+                transition={{ duration: 0.3, delay: 0.02 }}
               >
-                <a
-                  href="https://bigdrop.co.ke/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block px-4 py-3 text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-300 font-medium"
+                <Link
+                  to="/services"
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/services" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
+                  title="Our Services"
                 >
-                  Bigdrop
-                </a>
+                  Our Services
+                </Link>
               </motion.li>
+              {/* About Us link for SEO */}
               <motion.li
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
+                transition={{ duration: 0.3, delay: 0.025 }}
+              >
+                <Link
+                  to="/about-us"
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/about-us" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
+                  onClick={toggleMobileMenu}
+                  title="About Us"
+                >
+                  About Us
+                </Link>
+              </motion.li>
+              {/* News Updates/Blogs link for SEO */}
+              <motion.li
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.03 }}
               >
                 <Link
                   to="/blog"
-                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${
-                    pathname === "/blog" 
-                      ? "bg-green-50 text-green-600" 
-                      : "text-gray-700 hover:text-green-600 hover:bg-green-50"
-                  }`}
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/blog" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
+                  title="News Updates/Blogs"
                 >
                   <span className="flex items-center gap-2">
-                    Blog
+                    News Updates/Blogs
                     <Sparkles className="w-3 h-3 text-green-500" />
                   </span>
                 </Link>
               </motion.li>
+              {/* Career link for SEO */}
               <motion.li
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.35 }}
+                transition={{ duration: 0.3, delay: 0.04 }}
               >
                 <Link
                   to="/jobs"
-                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${
-                    pathname === "/jobs" 
-                      ? "bg-green-50 text-green-600" 
-                      : "text-gray-700 hover:text-green-600 hover:bg-green-50"
-                  }`}
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/jobs" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
+                  title="Career"
                 >
-                  Careers
+                  Career
+                </Link>
+              </motion.li>
+              {/* Contact Us link for SEO */}
+              <motion.li
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.05 }}
+              >
+                <Link
+                  to="/contact-us"
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/contact-us" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
+                  onClick={toggleMobileMenu}
+                  title="Contact Us"
+                >
+                  Contact Us
+                </Link>
+              </motion.li>
+              {/* Track Your Shipment link for SEO */}
+              <motion.li
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.06 }}
+              >
+                <Link
+                  to="/track"
+                  className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/track" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
+                  onClick={toggleMobileMenu}
+                  title="Track Your Shipment"
+                >
+                  Track Your Shipment
                 </Link>
               </motion.li>
             </ul>
-            {/* Mobile CTA button */}
+            {/* Contact Us button - Mobile */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -162,7 +169,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
               >
                 <Link to="/contact-us" onClick={toggleMobileMenu}>
                   <span className="flex items-center justify-center gap-2 font-semibold">
-                    Get A Quote
+                    Contact Us
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 </Link>
@@ -213,6 +220,33 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                 <span>NEXTGEN MALL, 3rd Floor, Suite 39/40, Mombasa Road</span>
               </div>
             </motion.div>
+            {/* External links: WMS and Bigdrop */}
+            <div className="mt-8 flex flex-col gap-3">
+              <a
+                href="https://globeflight.thinksynergyltd.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WMS Client Login"
+                title="WMS Client Login"
+                className="flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold shadow hover:from-green-700 hover:to-green-600 transition-all duration-300 border border-green-100/60 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <span>WMS Login</span>
+                {/* Lucide LogIn icon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5m0 0l-5-5m5 5H3" /></svg>
+              </a>
+              <a
+                href="https://bigdrop.co.ke/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Bigdrop Ecommerce Platform"
+                title="Bigdrop Ecommerce Platform"
+                className="flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold shadow hover:from-green-700 hover:to-green-600 transition-all duration-300 border border-green-100/60 focus:outline-none focus:ring-2 focus:ring-green-400"
+              >
+                <span>Bigdrop</span>
+                {/* Lucide ShoppingCart icon */}
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h15l-1.5 9h-13L4 6zm0 0V4a2 2 0 012-2h2a2 2 0 012 2v2" /></svg>
+              </a>
+            </div>
           </div>
         </motion.div>
       </>

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Play, Info, VolumeX, Volume2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Helmet } from 'react-helmet-async'
 
 export default function Hero() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
@@ -16,8 +17,21 @@ export default function Hero() {
   }
 
   return (
-    <div className="relative h-screen overflow-hidden bg-gradient-to-r from-blue-600 to-green-400">
-      {/* Background Video */}
+    <section className="relative mt-16 w-full min-h-[90vh] overflow-hidden bg-black">
+      <Helmet>
+        <title>Logistics & Shipping Services | Globeflight Kenya</title>
+        <meta name="description" content="Discover modern, efficient, and secure logistics and shipping services with Globeflight Kenya. Air, sea, warehousing, customs, and more." />
+        <meta property="og:title" content="Logistics & Shipping Services | Globeflight Kenya" />
+        <meta property="og:description" content="Discover modern, efficient, and secure logistics and shipping services with Globeflight Kenya. Air, sea, warehousing, customs, and more." />
+        <meta property="og:image" content="/service.jpg" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://globeflight.co.ke/services" />
+        <link rel="canonical" href="https://globeflight.co.ke/services" />
+      </Helmet>
+      {/* Animated Gradient Blobs */}
+      <div className="absolute -top-32 -left-32 w-[40vw] h-[40vw] bg-green-400/20 rounded-full blur-3xl animate-pulse z-0" />
+      <div className="absolute -bottom-32 -right-32 w-[40vw] h-[40vw] bg-blue-400/20 rounded-full blur-3xl animate-pulse z-0" />
+      {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         {isVideoPlaying ? (
           <iframe
@@ -28,30 +42,41 @@ export default function Hero() {
             allowFullScreen
           ></iframe>
         ) : (
-          <div className="w-full h-full bg-black opacity-50"></div>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/service.jpg"
+            className="w-full h-full object-cover opacity-70"
+          >
+            <source src="/herovid.mp4" type="video/mp4" />
+            <source src="/video1.mp4" type="video/mp4" />
+          </video>
         )}
+        {/* Strong Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
       </div>
-
       {/* Content Overlay */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 sm:px-6 lg:px-8 min-h-[70vh] max-w-7xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-bold text-center mb-6"
+          className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-center mb-6 drop-shadow-2xl"
+          style={{ textShadow: '0 6px 32px rgba(0,0,0,0.85)' }}
         >
           Experience Seamless Logistics
         </motion.h1>
-        
         <motion.p
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl sm:text-2xl md:text-3xl text-center mb-8 max-w-3xl"
+          className="text-xl sm:text-2xl md:text-3xl text-center mb-8 max-w-3xl drop-shadow-2xl"
+          style={{ textShadow: '0 4px 24px rgba(0,0,0,0.85)' }}
         >
           Globeflight Kenya: Your Trusted Partner in Global Shipping and Logistics
         </motion.p>
-
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -62,7 +87,7 @@ export default function Hero() {
             <Button 
               size="lg" 
               onClick={playVideo}
-              className="bg-white text-blue-600 hover:bg-blue-100 transition-colors duration-300"
+              className="bg-white text-blue-600 hover:bg-blue-100 transition-colors duration-300 font-bold shadow-lg"
             >
               <Play className="mr-2 h-5 w-5" /> Watch Video
             </Button>
@@ -71,7 +96,7 @@ export default function Hero() {
             <Button 
               size="lg" 
               onClick={() => setIsMuted(!isMuted)}
-              className="bg-white text-blue-600 hover:bg-blue-100 transition-colors duration-300"
+              className="bg-white text-blue-600 hover:bg-blue-100 transition-colors duration-300 font-bold shadow-lg"
             >
               {isMuted ? <VolumeX className="mr-2 h-5 w-5" /> : <Volume2 className="mr-2 h-5 w-5" />}
               {isMuted ? 'Unmute' : 'Mute'}
@@ -81,13 +106,12 @@ export default function Hero() {
             size="lg" 
             variant="outline"
             onClick={() => setIsModalOpen(true)}
-            className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600 transition-colors duration-300"
+            className="bg-transparent border-white text-white hover:bg-white hover:text-blue-600 transition-colors duration-300 font-bold shadow-lg"
           >
             <Info className="mr-2 h-5 w-5" /> Learn More
           </Button>
         </motion.div>
       </div>
-
       {/* Animated Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0, y: 0 }}
@@ -99,7 +123,6 @@ export default function Hero() {
           <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
         </div>
       </motion.div>
-
       {/* Info Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="top-[45vh] mt-28 max-h-[80vh] overflow-y-auto">
@@ -126,6 +149,6 @@ export default function Hero() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   )
 }

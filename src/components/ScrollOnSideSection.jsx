@@ -14,13 +14,15 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import whatsapp from "@/assets/whatsapp.svg"
+import { Dialog } from "@/components/ui/dialog";
 
 const ScrollOnSideSection = () => {
   const [isVisible, setIsVisible] = useState(false)
-  const [showMessage, setShowMessage] = useState(false)
-  const [messageDismissed, setMessageDismissed] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const [activeTab, setActiveTab] = useState('whatsapp')
+  const [showWhatsAppModal, setShowWhatsAppModal] = useState(false);
+  const [waName, setWaName] = useState("");
+  const [waMessage, setWaMessage] = useState("");
 
   const toggleVisibility = () => {
     if (window.pageYOffset > 300) {
@@ -40,30 +42,17 @@ const ScrollOnSideSection = () => {
   useEffect(() => {
     window.addEventListener("scroll", toggleVisibility)
 
-    // Show the message after 5 seconds (increased from 3)
-    const timer = setTimeout(() => {
-      if (!messageDismissed) {
-        setShowMessage(true)
-      }
-    }, 5000)
-
     return () => {
       window.removeEventListener("scroll", toggleVisibility)
-      clearTimeout(timer)
     }
-  }, [messageDismissed])
-
-  const handleDismissMessage = () => {
-    setShowMessage(false)
-    setMessageDismissed(true)
-  }
+  }, [])
 
   const contactMethods = [
     {
       id: 'whatsapp',
       icon: MessageSquare,
       label: 'WhatsApp',
-      href: 'https://wa.me/254797398004',
+      href: 'https://wa.me/254729341277',
       color: 'from-green-500 to-green-600',
       hoverColor: 'hover:from-green-600 hover:to-green-700',
       description: 'Instant chat support'
@@ -81,90 +70,83 @@ const ScrollOnSideSection = () => {
       id: 'email',
       icon: Mail,
       label: 'Email',
-      href: 'mailto:info@globeflight.co.ke',
+      href: 'mailto:cso@globeflight.co.ke',
       color: 'from-purple-500 to-purple-600',
       hoverColor: 'hover:from-purple-600 hover:to-purple-700',
       description: 'Email support'
     }
   ]
 
+  // WhatsApp form submit handler
+  const handleWhatsAppSubmit = (e) => {
+    e.preventDefault();
+    const base = "https://wa.me/254729341277";
+    const text = encodeURIComponent(
+      `Hi, my name is ${waName || "[Your Name]"}. ${waMessage}`
+    );
+    window.open(`${base}?text=${text}`, "_blank");
+    setShowWhatsAppModal(false);
+    setWaName("");
+    setWaMessage("");
+  };
+
   return (
-    <div className="fixed bottom-6 left-6 z-[9990] flex flex-col items-center space-y-4">
-      {/* Modern Support Message - Hidden on small devices */}
+    <div className="fixed bottom-6 left-6 z-[9990] flex flex-col items-start space-y-4">
+      {/* WhatsApp Modal */}
       <AnimatePresence>
-        {showMessage && (
+        {showWhatsAppModal && (
           <motion.div
-            initial={{ opacity: 0, x: -20, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -20, scale: 0.9 }}
+            initial={{ opacity: 0, x: -20, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -20, y: 20, scale: 0.95 }}
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="relative hidden md:block"
+            className="absolute bottom-20 left-0 z-[9999] w-[90vw] max-w-sm md:w-96 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100 p-6 flex flex-col"
+            style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)' }}
+            onClick={e => e.stopPropagation()}
           >
-            <div className="absolute bottom-full mb-3 left-0 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100 p-6 w-80 max-w-sm">
-              {/* Close Button */}
-              <button
-                onClick={handleDismissMessage}
-                className="absolute top-3 right-3 p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
-                aria-label="Close message"
-              >
-                <X size={14} className="text-gray-500" />
-              </button>
-
-              {/* Header */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg">
-                    <MessageCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">1</span>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 text-lg">Need Help?</h4>
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    Online now
-                  </p>
-                </div>
-              </div>
-
-              {/* Message */}
-              <p className="text-gray-700 text-sm leading-relaxed mb-4">
-                Get instant support for shipping, tracking, or any questions. Our team is here to help 24/7!
-              </p>
-
-              {/* Contact Options */}
-              <div className="space-y-2">
-                {contactMethods.map((method) => (
-                  <a
-                    key={method.id}
-                    href={method.href}
-                    target={method.id === 'whatsapp' ? '_blank' : undefined}
-                    rel={method.id === 'whatsapp' ? 'noopener noreferrer' : undefined}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 group"
-                    onClick={() => setShowMessage(false)}
-                  >
-                    <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${method.color} flex items-center justify-center shadow-sm`}>
-                      <method.icon className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 text-sm">{method.label}</p>
-                      <p className="text-xs text-gray-500">{method.description}</p>
-                    </div>
-                    <ArrowUp className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200 rotate-45" />
-                  </a>
-                ))}
-              </div>
-
-              {/* Arrow */}
-              <div className="absolute -bottom-2 left-8 w-4 h-4 bg-white/95 transform rotate-45 border-r border-b border-gray-100"></div>
+            {/* Close Button */}
+            <button
+              onClick={() => setShowWhatsAppModal(false)}
+              className="absolute top-3 right-3 p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+              aria-label="Close WhatsApp form"
+            >
+              <X size={18} className="text-gray-500" />
+            </button>
+            <div className="flex flex-col items-center mb-4">
+              <img src={whatsapp} alt="WhatsApp" className="w-12 h-12 mb-2" />
+              <h3 className="font-bold text-lg text-green-700 mb-1">Chat with us on WhatsApp</h3>
+              <p className="text-gray-600 text-sm text-center">Fill in your details and message. We'll respond instantly!</p>
             </div>
+            <form onSubmit={handleWhatsAppSubmit} className="flex flex-col gap-4 mt-2">
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="rounded-xl border border-gray-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white/80"
+                value={waName}
+                onChange={e => setWaName(e.target.value)}
+                required
+              />
+              <textarea
+                placeholder="Type your message..."
+                className="rounded-xl border border-gray-200 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white/80 min-h-[80px] resize-none"
+                value={waMessage}
+                onChange={e => setWaMessage(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold shadow-lg hover:from-green-600 hover:to-green-700 transition-all text-lg mt-2"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <MessageSquare className="w-5 h-5" /> Send via WhatsApp
+                </span>
+              </button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Modern Floating Action Button */}
+      {/* WhatsApp FAB */}
       <div className="relative">
         <motion.div 
           whileHover={{ scale: 1.05 }} 
@@ -188,7 +170,7 @@ const ScrollOnSideSection = () => {
           />
 
           {/* Main Button */}
-          <div className="relative">
+          <div className="relative cursor-pointer" onClick={() => setShowWhatsAppModal(true)}>
             <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-2xl"></div>
             <div className="relative bg-gradient-to-r from-green-500 to-green-600 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all duration-300">
               <img
@@ -204,29 +186,6 @@ const ScrollOnSideSection = () => {
               />
             </div>
           </div>
-
-          {/* Online Status Indicator */}
-          <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full border-3 border-white bg-green-500 flex items-center justify-center shadow-lg">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          </div>
-
-          {/* Hover Label - Hidden on small devices */}
-          <AnimatePresence>
-            {isHovered && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg whitespace-nowrap hidden md:block"
-              >
-                <span className="flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  Chat with us
-                </span>
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
       </div>
 

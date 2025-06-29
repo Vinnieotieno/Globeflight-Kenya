@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Package, Truck, Clipboard, Globe, CheckCircle } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const logisticsSteps = [
   { 
@@ -101,11 +102,13 @@ const HowWeWork = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="mt-12 text-center"
+          className="mt-16 text-center"
         >
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-            Start Your Shipment
-          </Button>
+          <Link to="/contact-us">
+            <Button size="lg" className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold px-10 py-4 rounded-xl shadow-xl text-xl flex items-center gap-3">
+              <Truck className="w-6 h-6" /> Start Your Shipment
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </div>

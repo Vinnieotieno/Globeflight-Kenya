@@ -10,7 +10,7 @@ const CoreValuesSection = () => {
       title: "VISION", 
       description: "To be the leading independent logistics company, offering value-added total cargo solutions for corporates, SMEs & developing market sectors, growing our market share in Kenya and East Africa.",
       gradient: "from-blue-500 to-purple-600",
-      stats: { years: "25+", countries: "160+" }
+      stats: { years: "25+", countries: "175+" }
     },
     { 
       icon: Lightbulb, 
@@ -24,7 +24,7 @@ const CoreValuesSection = () => {
       title: "CORE VALUES", 
       description: "Reliability, Integrity, Efficiency, Innovation & Professionalism.",
       gradient: "from-green-500 to-emerald-500",
-      stats: { team: "500+", experience: "25y" }
+      stats: { team: "500+", experience: "25+" }
     }
   ]
 

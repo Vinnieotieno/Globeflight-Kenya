@@ -26,10 +26,10 @@ const FooterContactInfo = ({ handlePhoneClick }) => (
       <li className="flex items-center gap-3">
         <Mail className="w-5 h-5 text-green-400 flex-shrink-0" />
         <a 
-          href="mailto:info@globeflight.co.ke"
+          href="mailto:cs@globeflight.co.ke"
           className="text-gray-300 hover:text-green-400 transition-colors duration-300"
         >
-          info@globeflight.co.ke
+          cs@globeflight.co.ke
         </a>
       </li>
     </ul>

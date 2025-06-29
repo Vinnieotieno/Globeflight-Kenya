@@ -4,7 +4,7 @@ import { Globe, Users, Shield, Clock } from 'lucide-react'
 
 const StatsSection = () => {
   const stats = [
-    { icon: Globe, label: "Countries Served", value: "160+", color: "text-blue-600" },
+    { icon: Globe, label: "Countries Served", value: "175+", color: "text-blue-600" },
     { icon: Users, label: "Happy Clients", value: "10K+", color: "text-green-600" },
     { icon: Shield, label: "Success Rate", value: "99.9%", color: "text-purple-600" },
     { icon: Clock, label: "Years Experience", value: "25+", color: "text-orange-600" },

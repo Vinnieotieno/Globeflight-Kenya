@@ -47,7 +47,7 @@ const Hero = ({ children }) => {
                 Stay ahead with expert insights, industry trends, and inspiring stories from Globeflight Kenya
               </p>
 
-              {/* CTA Buttons */}
+              {/* CTA Buttons 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up animation-delay-400">
                 <Button 
                   className="px-8 py-6 text-lg font-semibold bg-white text-green-800 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl rounded-full"

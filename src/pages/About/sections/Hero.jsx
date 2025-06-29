@@ -50,7 +50,7 @@ const Hero = () => {
             <span className="block mt-2 font-medium text-green-400">Delivering excellence across 175+ countries.</span>
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ const Hero = () => {
               <Play className="w-6 h-6 mr-3" />
               Watch Our Story
             </Button>
-          </motion.div>
+          </motion.div>*/}
         </div>
       </div>
 

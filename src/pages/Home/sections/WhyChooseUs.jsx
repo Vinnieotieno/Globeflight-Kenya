@@ -11,7 +11,7 @@ const WhyChooseUs = () => {
   const stats = [
     { value: "25+", label: "Years Experience", icon: Clock },
     { value: "50K+", label: "Deliveries", icon: TrendingUp },
-    { value: "150+", label: "Global Partners", icon: Globe },
+    { value: "175+", label: "Global Partners", icon: Globe },
     { value: "99.9%", label: "Success Rate", icon: Shield },
   ]
 

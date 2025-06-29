@@ -109,7 +109,7 @@ const Hero = () => {
               Contact Globeflight
             </h1>
             <p className="text-gray-300 text-base sm:text-lg md:text-xl mb-8 text-center lg:text-left">
-              For More Personalise Information about Logistics Services in Kenya
+              For More Personalise Information about Logistics Services
             </p>
             <div className="space-y-4 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start text-white">
@@ -118,7 +118,7 @@ const Hero = () => {
               </div>
               <div className="flex items-center justify-center lg:justify-start text-white">
                 <Mail className="w-6 h-6 mr-3 text-green-400" />
-                <span>info@globeflightkenya.com</span>
+                <span>cs@globeflightkenya.com</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start text-white">
                 <MapPin className="w-6 h-6 mr-3 text-green-400" />
