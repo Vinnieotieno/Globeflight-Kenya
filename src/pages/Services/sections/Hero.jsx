@@ -17,7 +17,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative mt-16 w-full min-h-[90vh] overflow-hidden bg-black">
+    <section className="relative mt-24 w-full min-h-[90vh] overflow-hidden bg-black">
       <Helmet>
         <title>Logistics & Shipping Services | Globeflight Kenya</title>
         <meta name="description" content="Discover modern, efficient, and secure logistics and shipping services with Globeflight Kenya. Air, sea, warehousing, customs, and more." />
@@ -63,7 +63,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-center mb-6 drop-shadow-2xl"
+          className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-center mb-6 drop-shadow-2xl leading-tight"
           style={{ textShadow: '0 6px 32px rgba(0,0,0,0.85)' }}
         >
           Experience Seamless Logistics
@@ -72,7 +72,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl sm:text-2xl md:text-3xl text-center mb-8 max-w-3xl drop-shadow-2xl"
+          className="text-lg sm:text-xl md:text-2xl text-center mb-8 max-w-3xl drop-shadow-2xl"
           style={{ textShadow: '0 4px 24px rgba(0,0,0,0.85)' }}
         >
           Globeflight Kenya: Your Trusted Partner in Global Shipping and Logistics

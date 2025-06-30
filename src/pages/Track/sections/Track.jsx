@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,14 +13,24 @@ import '@/lib/leafletIconFix'
 import TrackHero from './TrackHero'
 import TrackResults from './TrackResults'
 import TrackMap from './TrackMap'
+import { useSearchParams } from 'react-router-dom'
 
 const API_BASE = "http://globeflight.co.ke/api"
 
 export default function TrackShipment() {
+  const [searchParams] = useSearchParams();
   const [trackingNumber, setTrackingNumber] = useState('')
   const [trackingData, setTrackingData] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const trackParam = searchParams.get('trackingNumber');
+    if (trackParam) {
+      setTrackingNumber(trackParam);
+      handleTrack(null, trackParam);
+    }
+  }, [searchParams]);
 
   const stages = [
     'Created',
@@ -32,15 +42,16 @@ export default function TrackShipment() {
     'Delivered',
   ]
 
-  const handleTrack = async (e) => {
+  const handleTrack = async (e, trackNum) => {
     if (e) e.preventDefault()
-    if (!trackingNumber) return
+    const currentTrackingNumber = trackNum || trackingNumber;
+    if (!currentTrackingNumber) return
     
     setLoading(true)
     setError(null)
     setTrackingData(null)
     try {
-      const response = await fetch(`${API_BASE}/tracking/public/${trackingNumber}`)
+      const response = await fetch(`${API_BASE}/tracking/public/${currentTrackingNumber}`)
       if (!response.ok) {
         if (response.status === 404) {
           setError('No shipment found for this consignment number.')

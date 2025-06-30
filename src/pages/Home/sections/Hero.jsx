@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
-import { Volume2, VolumeX, ChevronDown, Truck, Package, Warehouse, Globe, ArrowRight, Plane, Ship, Clock } from "lucide-react"
+import { Volume2, VolumeX, ChevronDown, Truck, Package, Warehouse, Globe, ArrowRight, Plane, Ship, Clock, Play } from "lucide-react"
 import { Link, useLocation } from "react-router-dom";
 const Hero = () => {
   const [isMuted, setIsMuted] = useState(true)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [activeService, setActiveService] = useState(0)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null)
   const containerRef = useRef(null)
   
@@ -53,6 +54,26 @@ const Hero = () => {
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+
+    video.addEventListener('play', onPlay);
+    video.addEventListener('pause', onPause);
+
+    if (video.paused) {
+        setIsPlaying(false);
+    }
+
+    return () => {
+        video.removeEventListener('play', onPlay);
+        video.removeEventListener('pause', onPause);
+    };
+  }, [isVideoLoaded]);
+
   const toggleMute = () => {
     if (videoRef.current) {
       videoRef.current.muted = !isMuted
@@ -60,8 +81,18 @@ const Hero = () => {
     }
   }
 
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+        if (videoRef.current.paused) {
+            videoRef.current.play();
+        } else {
+            videoRef.current.pause();
+        }
+    }
+  };
+
   return (
-    <section ref={containerRef} className="relative w-full min-h-screen mt-16 overflow-hidden bg-black">
+    <section ref={containerRef} className="relative w-full min-h-screen mt-24 overflow-hidden bg-black">
       {/* Animated Gradient Blobs */}
       <div className="absolute -top-32 -left-32 w-[40vw] h-[40vw] bg-green-400/20 rounded-full blur-3xl animate-pulse z-0" />
       <div className="absolute -bottom-32 -right-32 w-[40vw] h-[40vw] bg-blue-400/20 rounded-full blur-3xl animate-pulse z-0" />
@@ -91,6 +122,14 @@ const Hero = () => {
         </video>
         {/* Enhanced Glass Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
+        
+        {!isPlaying && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50" onClick={togglePlayPause}>
+                <button className="p-4 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/30">
+                    <Play className="w-12 h-12 text-white" />
+                </button>
+            </div>
+        )}
       </motion.div>
       {/* Main Content - Glassmorphism Card */}
       <motion.div style={{ opacity }} className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-20">
@@ -115,7 +154,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-white drop-shadow-2xl"
+            className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl drop-shadow-2xl"
             style={{ textShadow: '0 6px 32px rgba(0,0,0,0.85)' }}
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400">
@@ -128,7 +167,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="max-w-2xl mx-auto text-xl md:text-2xl text-white/90 drop-shadow-2xl"
+            className="max-w-2xl mx-auto text-lg text-center text-white/90 md:text-xl drop-shadow-2xl"
             style={{ textShadow: '0 4px 24px rgba(0,0,0,0.85)' }}
           >
             Revolutionizing supply chain excellence across East Africa and beyond
@@ -150,13 +189,13 @@ const Hero = () => {
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                   className="absolute inset-0"
                 >
-                  <div className="p-8 transition-all border bg-white/20 backdrop-blur-2xl rounded-2xl border-white/20 hover:border-white/30 shadow-xl">
+                  <div className="p-6 transition-all border md:p-8 bg-white/20 backdrop-blur-2xl rounded-2xl border-white/20 hover:border-white/30 shadow-xl">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        <div className={`p-4 rounded-xl bg-gradient-to-br ${services[activeService].color} shadow-lg`}>{services[activeService].icon}</div>
+                        <div className={`p-3 md:p-4 rounded-xl bg-gradient-to-br ${services[activeService].color} shadow-lg`}>{services[activeService].icon}</div>
                         <div>
-                          <h3 className="text-2xl font-bold text-white drop-shadow-lg">{services[activeService].title}</h3>
-                          <p className="mt-1 text-white/80 drop-shadow">{services[activeService].description}</p>
+                          <h3 className="text-xl font-bold text-white md:text-2xl drop-shadow-lg">{services[activeService].title}</h3>
+                          <p className="mt-1 text-sm text-white/80 md:text-base drop-shadow">{services[activeService].description}</p>
                         </div>
                       </div>
                       <ArrowRight className="w-6 h-6 text-white/50" />

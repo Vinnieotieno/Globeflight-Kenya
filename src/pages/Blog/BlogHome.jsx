@@ -1,5 +1,5 @@
 // src/pages/Blog/BlogHome.jsx
-import React from "react";
+import React, { Suspense } from "react";
 import Container from "@/components/Container";
 import Hero from "./sections/Hero";  
 import CallToActionSection from "@/components/CallToActionSection"; 
@@ -20,7 +20,9 @@ const BlogHome = () => {
       <div className="main-container">
         <Hero />
         <Container>
-          <Outlet />
+          <Suspense fallback={<div className="py-20 text-center">Loading Blog...</div>}>
+            <Outlet />
+          </Suspense>
         </Container>
         <CallToActionSection />
         <ScrollOnSideSection/>
