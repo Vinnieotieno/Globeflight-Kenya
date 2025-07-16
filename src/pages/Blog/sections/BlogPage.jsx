@@ -7,17 +7,18 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar, ChevronLeft, ChevronRight, Search, User as UserIcon, Tag as TagIcon, Eye as EyeIcon, ThumbsUp, MessageCircle, Clock as ClockIcon, TrendingUp, Sparkles, ArrowRight, Search as SearchIcon } from "lucide-react"
+import { Helmet } from "react-helmet-async";
 
 // API Configuration
 const API_BASE = (() => {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost') {
-      return 'http://localhost:5000/api';
+      return 'http://localhost:5000/admin/api';
     } else {
-      return 'https://globeflight.co.ke/api';
+      return 'https://globeflight.co.ke/admin/api';
     }
   }
-  return 'http://localhost:5000/api';
+  return 'http://localhost:5000/admin/api';
 })();
 
 // Simulated Link component for demo
@@ -34,6 +35,7 @@ export default function BlogGrid() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
+  const [searchInput, setSearchInput] = useState(""); // for controlled input
   const postsPerPage = 6
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [subscribeEmail, setSubscribeEmail] = useState("")
@@ -137,9 +139,10 @@ export default function BlogGrid() {
   }, [currentPage, searchTerm])
 
   const handleSearch = (e) => {
-    e.preventDefault()
-    setCurrentPage(1)
-  }
+    e.preventDefault();
+    setSearchTerm(searchInput);
+    setCurrentPage(1);
+  };
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -210,7 +213,53 @@ export default function BlogGrid() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      <Helmet>
+        <title>Blog | Latest News & Industry Updates | Globeflight Kenya</title>
+        <meta name="description" content="Stay updated with Globeflight Kenya's latest news, shipping industry insights, logistics tips, and company announcements. Read our blog for expert advice and updates." />
+        <meta name="keywords" content="Globeflight Kenya blog, logistics news, shipping updates, freight tips, industry insights, global shipping, Africa logistics, supply chain, warehousing, customs clearance, air freight, sea freight" />
+        <link rel="canonical" href={`https://globeflight.co.ke/blog`} />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://globeflight.co.ke/blog`} />
+        <meta property="og:title" content="Blog | Latest News & Industry Updates | Globeflight Kenya" />
+        <meta property="og:description" content="Stay updated with Globeflight Kenya's latest news, shipping industry insights, logistics tips, and company announcements." />
+        <meta property="og:image" content="https://globeflight.co.ke/logo.png" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Blog | Latest News & Industry Updates | Globeflight Kenya" />
+        <meta name="twitter:description" content="Stay updated with Globeflight Kenya's latest news, shipping industry insights, logistics tips, and company announcements." />
+        <meta name="twitter:image" content="https://globeflight.co.ke/logo.png" />
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            "name": "Globeflight Kenya Blog",
+            "description": "Latest news, updates, and insights from Globeflight Kenya.",
+            "url": "https://globeflight.co.ke/blog",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Globeflight Kenya",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://globeflight.co.ke/logo.png"
+              }
+            },
+            "blogPost": posts.map(post => ({
+              "@type": "BlogPosting",
+              "headline": post.title,
+              "image": post.featuredImage,
+              "author": {
+                "@type": "Person",
+                "name": post.author?.fullName || 'Anonymous'
+              },
+              "datePublished": post.publishedAt,
+              "url": `https://globeflight.co.ke/blog/${post.slug}`
+            }))
+          })}
+        </script>
+      </Helmet>
       {/* Featured Post Section */}
       {featuredPost && (
         <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-green-50 py-20">
@@ -282,7 +331,7 @@ export default function BlogGrid() {
                       src={
                         featuredPost.featuredImage.startsWith("http")
                           ? featuredPost.featuredImage
-                          : `${API_BASE.replace("/api", "")}/${featuredPost.featuredImage.replace(/^\/+/, "")}`
+                          : `${API_BASE.replace("/admin/api", "")}/${featuredPost.featuredImage.replace(/^\/+/, "")}`
                       }
                       alt={featuredPost.title}
                       className="relative w-full h-[400px] object-cover rounded-3xl shadow-2xl transform group-hover:scale-[1.02] transition-transform duration-300"
@@ -302,25 +351,26 @@ export default function BlogGrid() {
 
       <div className="container px-4 py-16 mx-auto">
         {/* Search Section */}
-        <div className="max-w-2xl mx-auto mb-16">
-          <div className="relative">
+        <section className="max-w-2xl mx-auto mb-16">
+          <form className="relative" onSubmit={handleSearch} role="search" aria-label="Blog Search">
             <Input
               type="search"
               placeholder="Search articles, topics, authors..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-6 pr-32 py-6 text-lg rounded-full border-2 border-gray-200 focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-200"
+              aria-label="Search blog posts"
             />
             <Button 
-              onClick={handleSearch}
+              type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-full px-6 py-2 shadow-lg"
+              aria-label="Search"
             >
               <SearchIcon className="w-4 h-4 mr-2" />
               Search
             </Button>
-          </div>
-        </div>
+          </form>
+        </section>
 
         <div className="grid gap-12 lg:grid-cols-4">
           {/* Main Content */}
@@ -360,7 +410,7 @@ export default function BlogGrid() {
                             src={
                               post.featuredImage.startsWith("http")
                                 ? post.featuredImage
-                                : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                                : `${API_BASE.replace("/admin/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
                             }
                             alt={post.title}
                             className="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-500"
@@ -570,7 +620,7 @@ export default function BlogGrid() {
                           src={
                             post.featuredImage.startsWith("http")
                               ? post.featuredImage
-                              : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                              : `${API_BASE.replace("/admin/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
                           }
                           alt={post.title}
                           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
@@ -605,6 +655,6 @@ export default function BlogGrid() {
           </section>
         )}
       </div>
-    </div>
+    </main>
   )
 }

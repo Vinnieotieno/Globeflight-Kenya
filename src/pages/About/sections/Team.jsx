@@ -26,7 +26,7 @@ const Team = () => {
     ),
     linkedin: member.linkedin || "#",
     twitter: member.twitter || "#",
-    email: member.email || member.name.toLowerCase().split(' ')[0] + "@globeflight.com"
+    email: member.email || member.name.toLowerCase().split(' ')[0] + "@globeflight.co.ke"
   }));
 
   return (

@@ -16,7 +16,7 @@ export const contactCards = [
     desc: "Search our FAQ for answers to anything you might ask.",
     cta: {
       name: "Visit FAQ",
-      link: "/contact-us#faq",
+      link: "/contact-us",
     },
   },
   {
@@ -35,17 +35,17 @@ export const contactCards = [
     location: [
       {
         location: "NEXTGEN MALL, 3rd Floor, Suite 39/40, Mombasa Road",
-        country: "Kenya",
+        country: "Kenya (Africa Headquarters)",
         link: "tel:+254729341277",
       },
       {
         location: "Warehouse, Semco Business Park Mombasa Road",
-        country: "Kenya",
+        country: "Kenya (International Distribution Hub)",
         link: "tel:+254729341277",
       },
       {
-        location: "2006 fort argyle road",
-        country: "United States",
+        location: "2006 Fort Argyle Road",
+        country: "United States (Americas Operations)",
         link: "tel:+19124649333",
       },
     ],
@@ -54,53 +54,53 @@ export const contactCards = [
 
 export const faqs = [
   {
-    question: "What regions in East Africa do you cover?",
+    question: "Which countries and regions does Globeflight Kenya serve internationally?",
     answer:
-      "We provide distribution services across East Africa, covering countries such as Kenya, Tanzania, Uganda, Rwanda, Ethiopia,and more. Our extensive network ensures seamless transportation within these regions.",
+      "Globeflight Kenya provides comprehensive international logistics services worldwide. We cover all African countries (54 nations), Europe (including UK, Germany, France, Italy, Netherlands), Asia (China, India, Japan, UAE, Singapore), Americas (USA, Canada, Brazil, Mexico), and Oceania (Australia, New Zealand). Our global network includes over 200 countries with direct shipping routes from Kenya to major international hubs. We specialize in Africa-to-World and World-to-Africa logistics solutions.",
   },
   {
-    question: "What types of goods do you transport?",
+    question: "What types of goods does Globeflight Kenya transport internationally?",
     answer:
-      "We handle a wide range of goods, including perishables, bulk goods, retail products, electronics, pharmaceuticals, and more. Our experienced team ensures the safe and secure transportation of your goods, regardless of their nature.",
+      "Globeflight Kenya handles diverse international cargo including: perishables (flowers, fruits, vegetables for export), electronics and technology products, textiles and apparel, pharmaceuticals and medical supplies, automotive parts and vehicles, industrial machinery and equipment, dangerous goods (IATA/IMDG certified), precious cargo and valuables, e-commerce products, and bulk commodities. We ensure compliance with international shipping regulations, proper documentation, and specialized handling for each cargo type across all global destinations.",
   },
   {
-    question: "How do I know my freight charges?",
+    question: "How do I calculate international shipping charges with Globeflight Kenya?",
     answer:
-      "Please send us an email. Value added services such as door delivery and re-packaging for international shipping are chargeable.",
+      "For accurate international freight charges, email us at cs@globeflight.co.ke with: origin and destination countries, cargo type/description, weight and dimensions, Incoterms preference (FOB, CIF, DDP, etc.), and any special requirements. We provide transparent all-inclusive quotes covering: international freight rates, customs duties estimation, documentation fees, insurance options, and door-to-door delivery costs. Quotes are provided in multiple currencies (USD, EUR, GBP, KES) within 24 hours.",
   },
   {
-    question: "How do you ensure the safety of my goods during transportation?",
+    question: "How does Globeflight Kenya ensure cargo safety during international transportation?",
     answer:
-      "We prioritize the safety and security of your goods. Our fleet of vehicles is regularly maintained, equipped with advanced tracking systems, and operated by skilled drivers trained in safe handling practices. Additionally, we offer insurance coverage options to provide additional peace of mind.",
+      "International cargo safety is paramount at Globeflight Kenya. We implement: GPS tracking across all continents, temperature-controlled containers for sensitive cargo, high-security seals meeting C-TPAT standards, comprehensive international cargo insurance (up to $5 million), partnered secure facilities at all international ports/airports, trained personnel certified in international cargo handling, real-time monitoring systems, and compliance with international security protocols (ISPS, TSA, AEO). Our global insurance covers all risks from origin to final destination.",
   },
   {
-    question: "Can you accommodate specific delivery schedules?",
+    question: "Can Globeflight Kenya handle time-sensitive international deliveries?",
     answer:
-      "Absolutely. We understand the importance ofmeeting delivery deadlines. Our team works closely with you to understand your /n requirements and develop customized delivery schedules that align with your business needs.",
+      "Absolutely! Globeflight Kenya specializes in express international services: Next-day delivery to major global cities, 48-72 hour delivery worldwide, dedicated aircraft charters for urgent cargo, priority customs clearance at all ports, time-definite delivery options, and specialized handling for time-critical shipments like pharmaceuticals or perishables. We work with premium carriers ensuring your international shipments meet critical deadlines across any time zone.",
   },
   {
-    question: "Why choose us as Globeflight Kenya?",
+    question: "Why choose Globeflight Kenya for international logistics?",
     answer:
-      "With over 25 years of experience in the logistics industry, we have honed our expertise, developed strong relationships, and gained in-depth knowledge of the East African market.",
+      "With 25+ years in international logistics, Globeflight Kenya offers: established global network spanning 200+ countries, strategic partnerships with world's leading carriers (DHL, FedEx, Maersk, Emirates), multilingual support team (English, French, Arabic, Chinese, Spanish), expertise in international trade regulations and documentation, competitive international rates through volume agreements, single point of contact for worldwide shipments, proven track record with Fortune 500 companies, and specialized Africa trade lane expertise. We're your gateway to global markets.",
   },
   {
-    question: "Do you offer warehousing and storage solutions?",
+    question: "Does Globeflight Kenya offer international warehousing and fulfillment?",
     answer:
-      "Yes, we offer warehousing and storage solutions to accommodate your inventory needs. Our secure facilities are equipped to handle various types of goods, providing you with flexible storage options as per your requirements.",
+      "Yes, Globeflight Kenya provides strategic international warehousing solutions: Free Trade Zone facilities in Kenya for duty-free storage, bonded warehouses for international cargo consolidation, temperature-controlled storage for global distribution, international fulfillment services for e-commerce, cross-docking for international shipments, inventory management integrated with global systems, pick-pack-ship for worldwide orders, and strategic location serving Europe, Asia, and Americas from Africa. Our Nairobi hub serves as an ideal distribution center for international operations.",
   },
   {
-    question: "How can I keep track of my shipments?",
+    question: "How can I track my international shipments with Globeflight Kenya?",
     answer:
-      "We appreciate the importance of tracking your shipments and staying up to date on their journey at Globeflight and Union Green. We have a dedicated customer support team that keeps you informed at all times.When you entrust us with your shipment, our customer service representatives keep you updated on the status and location of your items on a frequent basis. You can count on our team to respond quickly to \n any questions or issues you may have about your cargo.",
+      "Globeflight Kenya offers advanced international shipment tracking: real-time GPS tracking across all countries, unified tracking portal for multi-modal shipments, SMS/email updates at every international checkpoint, mobile app with global coverage (coming soon), integration with carrier tracking systems worldwide, customs clearance status updates, estimated arrival times accounting for time zones, proof of delivery from any global destination, and 24/7 customer support in multiple languages. Track shipments from Kenya to anywhere in the world seamlessly.",
   },
   {
-    question: "What is minimum chargeable weight and how does it affect me?",
+    question: "What are the shipping options and transit times for international deliveries?",
     answer:
-      "It is the lowest weight we will accept to render our freighting service. It varies from country to country. Any package that weighs less than minimum weight will be invoiced at minimum weight freight charge. ",
+      "Globeflight Kenya offers multiple international shipping options: EXPRESS AIR (1-3 days): Kenya to Europe/USA/Asia major cities, STANDARD AIR (3-7 days): Worldwide coverage including remote areas, SEA FREIGHT FCL (15-45 days): Most economical for large shipments, SEA FREIGHT LCL (20-50 days): Cost-effective for smaller cargo, MULTIMODAL (Variable): Combining air/sea/road for optimal cost-time balance. Transit times vary by destination, customs procedures, and service selected. We provide accurate ETAs for all international routes.",
   },
   {
-    question: "Can you ship anything I want to?",
+    question: "What items have restrictions for international shipping through Globeflight Kenya?",
     answer:
-      "We will ship all our clients' general goods. Depending on several factors we will at discretion decide whether to ship hazardous goods. Such include: gases, flammable liquid, flammable solids, oxidizing substances and organic peroxides, toxic and infectious substances, radioactive materials, corrosive materials, magnetized materials, dry ice, machines equipped with fuel tanks. For more information and clarifications you can send us an email .",
+      "International shipping restrictions vary by country but generally include: Prohibited items: illegal drugs, weapons without permits, counterfeit goods, and items banned by destination countries. Restricted items requiring special permits: hazardous materials (UN classified), live animals (need health certificates), precious metals/stones (require declarations), certain electronics (need export licenses), cultural artifacts, and pharmaceutical products. We provide country-specific guidance and handle permit applications. Always declare contents accurately for smooth international customs clearance. Email us for destination-specific restrictions.",
   },
 ]

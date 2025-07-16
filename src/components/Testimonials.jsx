@@ -118,12 +118,12 @@ const TestimonialCard = ({ testimonial, isActive }) => {
 const API_BASE = (() => {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost') {
-      return 'http://localhost:5000/api';
+      return 'http://localhost:5000/admin/api';
     } else {
-      return 'https://globeflight.co.ke/api';
+      return 'https://globeflight.co.ke/admin/api';
     }
   }
-  return 'http://localhost:5000/api'; // fallback
+  return 'http://localhost:5000/admin/api'; // fallback
 })();
 
 console.log('API_BASE determined as:', API_BASE);

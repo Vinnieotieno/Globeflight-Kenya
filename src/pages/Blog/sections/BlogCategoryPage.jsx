@@ -7,17 +7,18 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar as CalendarIcon, User as UserIcon, ArrowLeft, Tag as TagIcon } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 
 // API Configuration
 const API_BASE = (() => {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost') {
-      return 'http://localhost:5000/api';
+      return 'http://localhost:5000/admin/api';
     } else {
-      return 'https://globeflight.co.ke/api';
+      return 'https://globeflight.co.ke/admin/api';
     }
   }
-  return 'http://localhost:5000/api';
+  return 'http://localhost:5000/admin/api';
 })();
 
 // Simulated Link component for demo
@@ -131,8 +132,78 @@ const BlogCategoryPage = () => {
     )
   }
 
+  // SEO meta
+  const pageTitle = `${category.name} Updates | Blog | Globeflight Kenya`;
+  const pageDesc = category.description || `Read the latest updates about ${category.name} from Globeflight Kenya.`;
+  const canonicalUrl = `https://globeflight.co.ke/blog/category/${category.slug}`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <meta name="keywords" content={`Globeflight Kenya blog, ${category.name}, logistics, shipping, Africa logistics, supply chain`} />
+        <link rel="canonical" href={canonicalUrl} />
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:image" content="https://globeflight.co.ke/logo.png" />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDesc} />
+        <meta name="twitter:image" content="https://globeflight.co.ke/logo.png" />
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": category.name,
+            "description": pageDesc,
+            "url": canonicalUrl,
+            "mainEntity": posts.map(post => ({
+              "@type": "BlogPosting",
+              "headline": post.title,
+              "image": post.featuredImage,
+              "author": {
+                "@type": "Person",
+                "name": post.author?.fullName || 'Anonymous'
+              },
+              "datePublished": post.publishedAt,
+              "url": `https://globeflight.co.ke/blog/${post.slug}`
+            }))
+          })}
+        </script>
+        {/* BreadcrumbList Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://globeflight.co.ke/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": "https://globeflight.co.ke/blog"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": category.name,
+                "item": `https://globeflight.co.ke/blog/category/${category.slug}`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
       <div className="container px-4 py-16 mx-auto">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -190,7 +261,7 @@ const BlogCategoryPage = () => {
                         src={
                           post.featuredImage.startsWith("http")
                             ? post.featuredImage
-                            : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                            : `${API_BASE.replace("/admin/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
                         }
                         alt={post.title}
                         className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
@@ -237,7 +308,7 @@ const BlogCategoryPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -15,6 +15,10 @@ const clients = [
   { name: "SYBYL", logo: "/client6.png", website: "https://sybyl.com" },
   { name: "RIANA", logo: "/client7.png", website: "https://riana.co.ke" },
   { name: "NOKIA SIEMENS", logo: "/client8.png", website: "https://www.nokia.com" },
+  { name: "Flashglobal", logo: "/flashglobal.jpeg", website: "https://flashglobal.com/"},
+  { name: "Ennos", logo: "/ennos.jpeg", website: "https://ennos.ch"},
+  { name: "WIOCC", logo: "/WIOCC.jpeg", website: "https://wiocc.net/"},
+
 ]
 
 export default function OurClients() {

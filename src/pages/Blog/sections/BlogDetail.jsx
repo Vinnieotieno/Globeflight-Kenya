@@ -7,17 +7,18 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { Calendar, Clock, Tag, ThumbsUp, ChevronLeft, ChevronRight, Share2, MessageCircle, User, Eye, Bookmark, MoreHorizontal, Twitter, Facebook, Linkedin, Link2 } from "lucide-react"
 import { useParams, useNavigate } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 
 // API Configuration
 const API_BASE = (() => {
   if (typeof window !== 'undefined') {
     if (window.location.hostname === 'localhost') {
-      return 'http://localhost:5000/api';
+      return 'http://localhost:5000/admin/api';
     } else {
-      return 'https://globeflight.co.ke/api';
+      return 'https://globeflight.co.ke/admin/api';
     }
   }
-  return 'http://localhost:5000/api';
+  return 'http://localhost:5000/admin/api';
 })();
 
 // Simulated components
@@ -178,8 +179,95 @@ export default function BlogDetail() {
     year: 'numeric',
   })
 
+  // SEO meta
+  const pageTitle = `${post.title} | Blog | Globeflight Kenya`;
+  const pageDesc = post.shortDescription || post.title || "Read this blog post from Globeflight Kenya.";
+  const canonicalUrl = `https://globeflight.co.ke/blog/${post.slug}`;
+  const imageUrl = post.featuredImage && post.featuredImage.startsWith("http")
+    ? post.featuredImage
+    : post.featuredImage
+      ? `https://globeflight.co.ke/${post.featuredImage.replace(/^\/+/,'')}`
+      : "https://globeflight.co.ke/logo.png";
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDesc} />
+        <meta name="keywords" content={`Globeflight Kenya blog, ${post.title}, logistics, shipping, ${post.category?.name || ''}, Africa logistics, supply chain`} />
+        <link rel="canonical" href={canonicalUrl} />
+        {/* Open Graph */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDesc} />
+        <meta property="og:image" content={imageUrl} />
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDesc} />
+        <meta name="twitter:image" content={imageUrl} />
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "image": imageUrl,
+            "author": {
+              "@type": "Person",
+              "name": post.author?.fullName || 'Anonymous'
+            },
+            "datePublished": post.publishedAt,
+            "dateModified": post.updatedAt || post.publishedAt,
+            "description": pageDesc,
+            "articleBody": post.shortDescription || '',
+            "publisher": {
+              "@type": "Organization",
+              "name": "Globeflight Kenya",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://globeflight.co.ke/logo.png"
+              }
+            },
+            "mainEntityOfPage": canonicalUrl,
+            "url": canonicalUrl
+          })}
+        </script>
+        {/* BreadcrumbList Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://globeflight.co.ke/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": "https://globeflight.co.ke/blog"
+              },
+              post.category && {
+                "@type": "ListItem",
+                "position": 3,
+                "name": post.category.name,
+                "item": `https://globeflight.co.ke/blog/category/${post.category.slug}`
+              },
+              {
+                "@type": "ListItem",
+                "position": post.category ? 4 : 3,
+                "name": post.title,
+                "item": `https://globeflight.co.ke/blog/${post.slug}`
+              }
+            ].filter(Boolean)
+          })}
+        </script>
+      </Helmet>
       {/* Hero Section with Featured Image */}
       <div className="relative">
         {post.featuredImage && (
@@ -188,7 +276,7 @@ export default function BlogDetail() {
               src={
                 post.featuredImage.startsWith("http")
                   ? post.featuredImage
-                  : `${API_BASE.replace("/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
+                  : `${API_BASE.replace("/admin/api", "")}/${post.featuredImage.replace(/^\/+/, "")}`
               }
               alt={post.title}
               className="w-full h-full object-cover"
@@ -540,7 +628,7 @@ export default function BlogDetail() {
                           src={
                             relatedPost.featuredImage.startsWith("http")
                               ? relatedPost.featuredImage
-                              : `${API_BASE.replace("/api", "")}/${relatedPost.featuredImage.replace(/^\/+/, "")}`
+                              : `${API_BASE.replace("/admin/api", "")}/${relatedPost.featuredImage.replace(/^\/+/, "")}`
                           }
                           alt={relatedPost.title}
                           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
@@ -576,6 +664,6 @@ export default function BlogDetail() {
           </section>
         )}
       </div>
-    </div>
+    </main>
   )
 }

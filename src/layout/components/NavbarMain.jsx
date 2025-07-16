@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ArrowRight, Sparkles } from "lucide-react"
@@ -12,7 +12,38 @@ import {
 import { Helmet } from "react-helmet-async"
 
 const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOpen }) => {
-  const { logo, navItems } = data
+  const { logo, navItems } = data;
+
+  // Blog categories state
+  const [categories, setCategories] = useState([]);
+  const [catDropdownOpen, setCatDropdownOpen] = useState(false);
+
+  // API base (copied from BlogCategoryPage.jsx)
+  const API_BASE = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+    ? 'http://localhost:5000/admin/api'
+    : 'https://globeflight.co.ke/admin/api';
+
+  useEffect(() => {
+    // Fetch categories on mount
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/categories`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        });
+        const data = await res.json();
+        if (data && data.data) {
+          setCategories(data.data);
+        }
+      } catch (err) {
+        // Fail silently, don't break navbar
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const navigationSchema = {
     "@context": "https://schema.org",
@@ -39,12 +70,13 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
         </script>
       </Helmet>
       <div className="w-full flex items-center justify-between px-4 lg:px-12">
-        {/* Logo with hover effect */}
+        {/* Logo with hover effect - FIXED ALT TEXT */}
         <Link to="/" className="group">
           <motion.img 
             src={logo} 
             className="object-cover h-12 sm:h-16 md:h-20 w-auto transition-all duration-300 group-hover:scale-105" 
-            alt="globeflight.co.ke"
+            alt="Globeflight Kenya - Leading Logistics Company"
+            title="Globeflight Kenya"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           />
@@ -61,7 +93,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/" ? "text-green-600" : ""}`}
-              title="Home"
+              title="Home - Globeflight Kenya"
             >
               <span className="relative z-10">Home</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -83,7 +115,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/services"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/services" ? "text-green-600" : ""}`}
-              title="Our Services"
+              title="Our Services - Globeflight Kenya"
             >
               <span className="relative z-10">Services</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -105,7 +137,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/about-us"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/about-us" ? "text-green-600" : ""}`}
-              title="About Us"
+              title="About Us - Globeflight Kenya"
             >
               <span className="relative z-10">About Us</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -117,21 +149,25 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
               )}
             </Link>
           </motion.li>
-          {/* Our Blogs link for SEO */}
+          {/* Our Blogs link for SEO with dropdown */}
           <motion.li 
             className="relative group"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
+            onMouseEnter={() => setCatDropdownOpen(true)}
+            onMouseLeave={() => setCatDropdownOpen(false)}
           >
             <Link
               to="/blog"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/blog" ? "text-green-600" : ""}`}
-              title="News Updates/Blogs"
+              title="News & Updates - Globeflight Kenya"
+              aria-haspopup="true"
+              aria-expanded={catDropdownOpen ? "true" : "false"}
             >
               <span className="relative z-10 flex items-center gap-1">
                 Updates
-                
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
               </span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
               {pathname === "/blog" && (
@@ -141,6 +177,26 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
                 />
               )}
             </Link>
+            {/* Dropdown: only show on desktop */}
+            {catDropdownOpen && categories.length > 0 && (
+              <div
+                className="absolute left-0 top-full mt-2 min-w-[220px] bg-white border border-gray-100 shadow-xl rounded-xl z-50 py-2 animate-fadeIn"
+                role="menu"
+                aria-label="Blog Categories"
+              >
+                {categories.map(cat => (
+                  <a
+                    key={cat.slug}
+                    href={`/blog/category/${cat.slug}`}
+                    className="block px-5 py-2 text-gray-700 hover:bg-green-50 hover:text-green-700 font-medium transition-colors duration-200 whitespace-nowrap"
+                    role="menuitem"
+                    title={cat.name}
+                  >
+                    {cat.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </motion.li>
           {/* Career link for SEO */}
           <motion.li 
@@ -152,7 +208,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/jobs"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/jobs" ? "text-green-600" : ""}`}
-              title="Career"
+              title="Careers - Globeflight Kenya"
             >
               <span className="relative z-10">Careers</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -174,7 +230,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/contact-us"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/contact-us" ? "text-green-600" : ""}`}
-              title="Contact Us"
+              title="Contact Us - Globeflight Kenya"
             >
               <span className="relative z-10">Contact Us</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -196,7 +252,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             <Link
               to="/track"
               className={`relative text-gray-700 font-medium hover:text-green-600 transition-all duration-300 py-2 px-3 ${pathname === "/track" ? "text-green-600" : ""}`}
-              title="Track Your Shipment"
+              title="Track Your Shipment - Globeflight Kenya"
             >
               <span className="relative z-10">Track Shipment</span>
               <span className="absolute inset-0 bg-green-50 scale-0 group-hover:scale-100 transition-transform duration-300 rounded-lg -z-10"></span>
@@ -221,7 +277,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
             size="sm"
             className="relative group bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-5 py-2 overflow-hidden text-base"
           >
-            <Link to="/contact-us">
+            <Link to="/contact-us" title="Get a Quote - Globeflight Kenya">
               <span className="relative z-10 flex items-center gap-2 font-semibold">
                 Get Quote 
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
@@ -250,7 +306,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
-                  aria-label="WMS Client Login"
+                  aria-label="WMS Client Login - Globeflight Kenya"
                   title="WMS Client Login"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5m0 0l-5-5m5 5H3" /></svg>
@@ -263,7 +319,7 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
-                  aria-label="Bigdrop Ecommerce Platform"
+                  aria-label="Bigdrop Ecommerce Platform by Globeflight"
                   title="Bigdrop Ecommerce Platform"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h15l-1.5 9h-13L4 6zm0 0V4a2 2 0 012-2h2a2 2 0 012 2v2" /></svg>
@@ -311,4 +367,4 @@ const NavbarMain = ({ data, pathname, isSticky, toggleMobileMenu, isMobileMenuOp
   )
 }
 
-export default NavbarMain 
+export default NavbarMain

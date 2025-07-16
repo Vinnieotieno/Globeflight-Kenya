@@ -15,7 +15,7 @@ import TrackResults from './TrackResults'
 import TrackMap from './TrackMap'
 import { useSearchParams } from 'react-router-dom'
 
-const API_BASE = "http://globeflight.co.ke/api"
+const API_BASE = "https://globeflight.co.ke/admin/api"
 
 export default function TrackShipment() {
   const [searchParams] = useSearchParams();

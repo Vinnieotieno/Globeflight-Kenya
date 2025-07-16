@@ -30,7 +30,7 @@ const Hero = () => {
       // Use the backend API endpoint with fallback
       const apiEndpoint = import.meta.env.VITE_API_URL 
         ? `${import.meta.env.VITE_API_URL}/contacts/public`
-        : 'http://globeflight.co.ke/api/contacts/public'
+        : 'https://globeflight.co.ke/admin/api/contacts/public'
       
       console.log('Using API endpoint:', apiEndpoint)
       

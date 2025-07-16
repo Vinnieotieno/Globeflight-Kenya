@@ -155,6 +155,36 @@ const ServicesGridSection = ({ setSelectedImage }) => {
             <p className="text-blue-900/80 text-xs font-medium">Professional support</p>
           </div>
         </motion.div>
+        {/* Importer of Records */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="group relative rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-green-300 bg-white/60 backdrop-blur-lg"
+          tabIndex={0}
+          aria-label="View Importer of Records image details"
+          onClick={() => setSelectedImage({
+            src: '/Customs.jpg',
+            alt: 'Importer of Records - Full compliance and representation for your import needs',
+            title: 'Importer of Records',
+            description: 'We handle all compliance, documentation, and representation for your import shipments.'
+          })}
+        >
+          <div className="aspect-[4/3] w-full overflow-hidden">
+            <img 
+              src="/Customs.jpg" 
+              alt="Importer of Records - Full compliance and representation for your import needs" 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:brightness-90"
+              loading="lazy"
+            />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-green-700/70 via-green-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+          <div className="absolute bottom-0 left-0 right-0 p-5 bg-white/80 backdrop-blur-md rounded-b-3xl shadow-lg z-20">
+            <h4 className="text-lg font-bold text-green-800 mb-1 font-sans">Importer of Records</h4>
+            <p className="text-green-900/80 text-xs font-medium">Compliance & import representation</p>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   )

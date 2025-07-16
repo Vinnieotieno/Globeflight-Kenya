@@ -40,6 +40,13 @@ const Hero = () => {
       icon: <Package className="w-6 h-6" />,
       color: "from-orange-500 to-red-500",
     },
+    // NEW SERVICE: Importer of Records
+    {
+      title: "Importer of Records",
+      description: "Full compliance and representation for your import needs",
+      icon: <Globe className="w-6 h-6" />,
+      color: "from-green-600 to-blue-600",
+    },
   ]
 
   useEffect(() => {

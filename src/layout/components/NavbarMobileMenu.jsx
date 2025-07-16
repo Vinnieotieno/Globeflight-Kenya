@@ -33,12 +33,14 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                 <img 
                   src={data.logo} 
                   className="h-12 w-auto" 
-                  alt="globeflight.co.ke"
+                  alt="Globeflight Kenya"
+                  title="Globeflight Kenya - Home"
                 />
               </Link>
               <button
                 className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
                 onClick={toggleMobileMenu}
+                aria-label="Close menu"
               >
                 <X className="w-5 h-5 text-gray-600" />
               </button>
@@ -57,7 +59,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="Home"
+                  title="Home - Globeflight Kenya"
                 >
                   Home
                 </Link>
@@ -72,7 +74,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/services"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/services" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="Our Services"
+                  title="Our Services - Globeflight Kenya"
                 >
                   Our Services
                 </Link>
@@ -87,7 +89,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/about-us"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/about-us" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="About Us"
+                  title="About Us - Globeflight Kenya"
                 >
                   About Us
                 </Link>
@@ -102,7 +104,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/blog"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/blog" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="News Updates/Blogs"
+                  title="News Updates & Blogs - Globeflight Kenya"
                 >
                   <span className="flex items-center gap-2">
                     News Updates/Blogs
@@ -120,7 +122,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/jobs"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/jobs" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="Career"
+                  title="Careers at Globeflight Kenya"
                 >
                   Career
                 </Link>
@@ -135,7 +137,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/contact-us"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/contact-us" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="Contact Us"
+                  title="Contact Us - Globeflight Kenya"
                 >
                   Contact Us
                 </Link>
@@ -150,7 +152,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                   to="/track"
                   className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium ${pathname === "/track" ? "bg-green-50 text-green-600" : "text-gray-700 hover:text-green-600 hover:bg-green-50"}`}
                   onClick={toggleMobileMenu}
-                  title="Track Your Shipment"
+                  title="Track Your Shipment - Globeflight Kenya"
                 >
                   Track Your Shipment
                 </Link>
@@ -167,9 +169,9 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                 asChild 
                 className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white shadow-lg transition-all duration-300 rounded-full py-4"
               >
-                <Link to="/contact-us" onClick={toggleMobileMenu}>
+                <Link to="/contact-us" onClick={toggleMobileMenu} title="Get a Quote - Globeflight Kenya">
                   <span className="flex items-center justify-center gap-2 font-semibold">
-                    Contact Us
+                    Get Quote
                     <ArrowRight className="w-4 h-4" />
                   </span>
                 </Link>
@@ -226,7 +228,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                 href="https://globeflight.thinksynergyltd.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="WMS Client Login"
+                aria-label="WMS Client Login - Globeflight Kenya"
                 title="WMS Client Login"
                 className="flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold shadow hover:from-green-700 hover:to-green-600 transition-all duration-300 border border-green-100/60 focus:outline-none focus:ring-2 focus:ring-green-400"
               >
@@ -238,7 +240,7 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
                 href="https://bigdrop.co.ke/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Bigdrop Ecommerce Platform"
+                aria-label="Bigdrop Ecommerce Platform by Globeflight"
                 title="Bigdrop Ecommerce Platform"
                 className="flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold shadow hover:from-green-700 hover:to-green-600 transition-all duration-300 border border-green-100/60 focus:outline-none focus:ring-2 focus:ring-green-400"
               >
@@ -254,4 +256,4 @@ const NavbarMobileMenu = ({ isMobileMenuOpen, toggleMobileMenu, data, pathname, 
   </AnimatePresence>
 )
 
-export default NavbarMobileMenu 
+export default NavbarMobileMenu
