@@ -137,7 +137,7 @@ const MainLayout = () => {
             "sameAs": [
               "https://www.facebook.com/globeflightkenya",
               "https://twitter.com/globeflight_ke",
-              "https://www.linkedin.com/company/globeflight-kenya",
+              "https://www.linkedin.com/in/globeflight-kenya-491351141/",
               "https://www.youtube.com/@globeflightkenya"
             ],
             "contactPoint": {

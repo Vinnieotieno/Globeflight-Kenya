@@ -9,7 +9,7 @@ const FooterBottom = () => (
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-400">
         <Heart className="w-4 h-4 text-red-400" />
-        <span>Made with love in Kenya</span>
+        <span>Made with love for Globeflight Kenya</span>
       </div>
     </div>
   </div>

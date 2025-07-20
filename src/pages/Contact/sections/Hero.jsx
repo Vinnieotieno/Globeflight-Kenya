@@ -2,15 +2,17 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, Mail, MapPin, Send } from 'lucide-react'
+import { Phone, Mail, MapPin, Send, ArrowDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 
 const Hero = () => {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
 
   const handleQuickContact = async (e) => {
     e.preventDefault()
@@ -24,6 +26,7 @@ const Hero = () => {
       return
     }
 
+    setIsSubmitting(true)
     try {
       console.log('Quick contact:', { email, message })
       
@@ -79,6 +82,16 @@ const Hero = () => {
         description: error.message || "There was a problem sending your message. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Scroll to main contact form
+  const scrollToContactForm = () => {
+    const formSection = document.getElementById('main-contact-form')
+    if (formSection) {
+      formSection.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -125,6 +138,15 @@ const Hero = () => {
                 <span>Nairobi, Kenya</span>
               </div>
             </div>
+            {/*
+            <div className="mt-6 text-center">
+              <span className="text-gray-500 text-sm">Want a detailed response? <br />
+                <Button variant="link" className="text-green-600 p-0 h-auto min-h-0" onClick={scrollToContactForm}>
+                  Scroll down for the full contact form
+                  <ArrowDown className="inline ml-1 animate-bounce" />
+                </Button>
+              </span>
+            </div>*/}
           </motion.div>
 
           {/* Quick Contact Form */}
@@ -133,6 +155,7 @@ const Hero = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md mx-auto lg:mx-0"
+            id="main-contact-form"
           >
             <h2 className="text-xl sm:text-2xl font-bold mb-4 text-gray-800 text-center lg:text-left">Quick Contact</h2>
             <form onSubmit={handleQuickContact}>
@@ -162,8 +185,8 @@ const Hero = () => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full bg-green-500 hover:bg-green-600">
-                  Send Message
+                <Button type="submit" className="w-full bg-green-500 hover:bg-green-600" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                   <Send className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -174,18 +197,20 @@ const Hero = () => {
 
       {/* Scroll Indicator Button */}
       <motion.div
-        className="absolute bottom-4 position-center left-1/2 transform -translate-x-1/2 z-20"
+        className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
         <Button
           variant="outline"
           size="lg"
-          className="text-black border-white hover:bg-white hover:text-green"
-          onClick={() => (window.location.href = '/services')}
+          className="text-black border-white hover:bg-white hover:text-green mb-2"
+          onClick={scrollToContactForm}
         >
-          Explore Our Services
+          Scroll to Full Contact Form
+          <ArrowDown className="ml-2 animate-bounce" />
         </Button>
+       
       </motion.div>
     </div>
   )

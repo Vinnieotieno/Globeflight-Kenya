@@ -1,5 +1,5 @@
 import Container from "@/components/Container";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Hero from "./sections/Hero";
 import ContactForm from "./sections/ContactForm";
 import FAQ from './sections/Faq'
@@ -7,6 +7,25 @@ import ScrollOnSideSection from "@/components/ScrollOnSideSection";
 import { Helmet } from "react-helmet-async";
 
 const index = () => {
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const form = formRef.current;
+      if (!form) return;
+      const rect = form.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (inView) {
+        form.classList.add('highlight-contact-form');
+        setTimeout(() => {
+          form.classList.remove('highlight-contact-form');
+        }, 1500);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -19,7 +38,9 @@ const index = () => {
       <div className="main-container">
         <Hero />
         <Container>
-          <ContactForm />
+          <div id="main-contact-form" ref={formRef}>
+            <ContactForm />
+          </div>
           <FAQ/>
         </Container>
         <ScrollOnSideSection/>
